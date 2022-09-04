@@ -9,12 +9,10 @@ export const useFormChange = (initialState) => {
 
     const value = type === "checkbox" ? target.checked : target.value;
 
-    console.log(name, value);
-
     setFormState({ ...formState, [name]: value });
   };
 
-  return [formState, onInputChange];
+  return [formState, onInputChange, setFormState];
 };
 
 export const useToggle = (initialValue = false) => {
