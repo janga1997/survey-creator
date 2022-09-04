@@ -1,0 +1,86 @@
+import { gql } from "@apollo/client";
+
+export const CREATE_SURVEY = gql`
+  mutation CreateSurvey($title: String!) {
+    createSurvey(title: $title) {
+      id
+      title
+    }
+  }
+`;
+
+export const CREATE_QUESTION = gql`
+  mutation CreateQuestion(
+    $text: String!
+    $surveyId: ID!
+    $required: Boolean!
+    $answerType: String!
+    $options: JSON!
+  ) {
+    createQuestion(
+      text: $text
+      survey_id: $surveyId
+      required: $required
+      answerType: $answerType
+      options: $options
+    ) {
+      id
+      text
+      survey_id
+      required
+      answerType
+      options
+    }
+  }
+`;
+
+export const DELETE_SURVEY = gql`
+  mutation DeleteSurvey($id: ID!) {
+    removeSurvey(id: $id) {
+      id
+    }
+  }
+`;
+
+export const UPDATE_SURVEY = gql`
+  mutation UpdateSurvey($id: ID!, $title: String!) {
+    updateSurvey(id: $id, title: $title) {
+      id
+      title
+    }
+  }
+`;
+
+export const DELETE_QUESTION = gql`
+  mutation DeleteQuestion($id: ID!) {
+    removeQuestion(id: $id) {
+      id
+    }
+  }
+`;
+
+export const UPDATE_QUESTION = gql`
+  mutation UpdateQuestion(
+    $id: ID!
+    $text: String!
+    $surveyId: ID!
+    $required: Boolean!
+    $answerType: String!
+    $options: JSON!
+  ) {
+    updateQuestion(
+      id: $id
+      text: $text
+      survey_id: $surveyId
+      required: $required
+      answerType: $answerType
+      options: $options
+    ) {
+      id
+      text
+      required
+      answerType
+      options
+    }
+  }
+`;
