@@ -7,7 +7,7 @@ import { GET_SURVEYS } from "queries";
 import { useToggle, useFormChange } from "hooks";
 import Link from "next/link";
 
-const SurveyRead = ({ index, id, title, toggle }) => {
+const SurveyRead = ({ index, id, title, toggle, order }) => {
   const [deleteSurvey] = useMutation(DELETE_SURVEY, {
     update: (cache, { data: { removeSurvey } }) =>
       cache.updateQuery({ query: GET_SURVEYS }, (data) => ({
@@ -27,6 +27,7 @@ const SurveyRead = ({ index, id, title, toggle }) => {
       <h2>
         <Link href={`/survey/${id}`}>{title}</Link>
       </h2>
+      <h3>{`${order?.length || 0} questions in this survey`}</h3>
 
       <div>
         <button onClick={toggle}>Edit</button>

@@ -5,6 +5,7 @@ export const GET_SURVEYS = gql`
     allSurveys {
       id
       title
+      order
     }
   }
 `;
