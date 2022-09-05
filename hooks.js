@@ -9,7 +9,12 @@ export const useFormChange = (initialState) => {
 
     const value = type === "checkbox" ? target.checked : target.value;
 
-    setFormState({ ...formState, [name]: value });
+    let resetOptions = {};
+    if (name === "answerType" && !value.includes("SELECT")) {
+      resetOptions = { options: [] };
+    }
+
+    setFormState({ ...formState, [name]: value, ...resetOptions });
   };
 
   return [formState, onInputChange, setFormState];

@@ -7,8 +7,17 @@ import { useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
 
 import { useToggle, useFormChange } from "hooks";
+import { OptionsInput } from "./CreateQuestion";
 
-const QuestionRead = ({ index, id, text, toggle, required, answerType }) => {
+const QuestionRead = ({
+  index,
+  id,
+  text,
+  toggle,
+  required,
+  answerType,
+  options,
+}) => {
   const {
     query: { surveyId },
   } = useRouter();
@@ -29,6 +38,15 @@ const QuestionRead = ({ index, id, text, toggle, required, answerType }) => {
         style={{ paddingRight: "2rem" }}
       >{`Answer Type: ${answerType}`}</span>
       <span>{`Required: ${Boolean(required)}`}</span>
+
+      {answerType.includes("SELECT") && (
+        <ul>
+          {options.map((value) => (
+            <li key={value}>{value}</li>
+          ))}
+        </ul>
+      )}
+
       <div>
         <button onClick={toggle}>Edit</button>
         <button onClick={deleteFromButton}>Delete</button>
@@ -55,12 +73,12 @@ const QuestionEdit = ({
     refetchQueries: [{ query: GET_QUESTIONS, variables: { surveyId } }],
   });
 
-  const [updateFormValues, onUpdateFormChange] = useFormChange({
+  const [updateFormValues, onUpdateFormChange, setFormValues] = useFormChange({
     id,
     text,
     required,
     answerType,
-    options,
+    options: options || [],
   });
 
   const updateSurveyInForm = (e) => {
@@ -95,6 +113,11 @@ const QuestionEdit = ({
         onChange={onUpdateFormChange}
       />
 
+      <OptionsInput
+        options={updateFormValues.options}
+        setFormValues={setFormValues}
+        answerType={updateFormValues.answerType}
+      />
       <button type="submit">Update</button>
       <button onClick={toggle} type="button">
         Cancel

@@ -6,29 +6,50 @@ import { useFormChange } from "hooks";
 import { GET_QUESTIONS } from "queries";
 import { useRouter } from "next/router";
 
-const OptionsInput = ({ answerType, options, setFormValues }) => {
-  const onOptionsChange = (event) => {
+export const OptionsInput = ({ answerType, options, setFormValues }) => {
+  console.log(options);
+
+  const removeOption = (index) => () => {
+    setFormValues((values) => ({
+      ...values,
+      options: options.filter((_, i) => i !== index),
+    }));
+  };
+
+  const addOption = () => {
+    setFormValues((values) => ({
+      ...values,
+      options: [...options, ""],
+    }));
+  };
+
+  const onArrayChange = (index) => (e) => {
     const {
       target: { value },
-    } = event;
-    if (answerType === "TEXT")
-      setFormValues((values) => ({
-        ...values,
-        options: { placeholderText: value },
-      }));
+    } = e;
+    const newOptions = options.slice();
+    newOptions[index] = value;
+    setFormValues((values) => ({
+      ...values,
+      options: newOptions,
+    }));
   };
 
   return (
-    <fieldset>
-      <legend>Options For the Question</legend>
-      {answerType === "TEXT" && (
-        <input
-          value={options?.placeholderText}
-          type="text"
-          onChange={onOptionsChange}
-        />
-      )}
-    </fieldset>
+    answerType.includes("SELECT") && (
+      <fieldset>
+        <legend>Options For the Question</legend>
+        <>
+          {options.map((value, index) => (
+            <div>
+              <input value={value} required onChange={onArrayChange(index)} />
+              <button onClick={removeOption(index)}>Delete</button>
+            </div>
+          ))}
+        </>
+        <button onClick={addOption}>Add</button>
+      </fieldset>
+    )
   );
 };
 
@@ -46,7 +67,7 @@ const CreateQuestion = ({ closeForm }) => {
     text: "",
     required: false,
     answerType: "TEXT",
-    options: {},
+    options: [],
   });
 
   const createSurveyInForm = (e) => {
@@ -94,6 +115,7 @@ const CreateQuestion = ({ closeForm }) => {
         </label>
       </fieldset>
       <OptionsInput
+        options={createFormValues.options}
         setFormValues={setFormValues}
         answerType={createFormValues.answerType}
       />

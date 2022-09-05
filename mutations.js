@@ -15,7 +15,7 @@ export const CREATE_QUESTION = gql`
     $surveyId: ID!
     $required: Boolean!
     $answerType: String!
-    $options: JSON!
+    $options: [String!]!
   ) {
     createQuestion(
       text: $text
@@ -66,7 +66,7 @@ export const UPDATE_QUESTION = gql`
     $surveyId: ID!
     $required: Boolean!
     $answerType: String!
-    $options: JSON!
+    $options: [String!]!
   ) {
     updateQuestion(
       id: $id

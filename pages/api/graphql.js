@@ -14,7 +14,7 @@ const data = {
       survey_id: 1,
       required: true,
       answerType: "BOOLEAN",
-      options: {},
+      options: ["Janga"],
     },
   ],
 };
