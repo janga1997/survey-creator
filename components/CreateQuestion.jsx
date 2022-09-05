@@ -61,6 +61,16 @@ const CreateQuestion = ({ closeForm }) => {
       const id = data?.createQuestion?.id;
       closeForm(id);
     },
+    update: (cache, { data: { createQuestion } }) =>
+      cache.updateQuery(
+        { query: GET_QUESTIONS, variables: { surveyId } },
+        (data) => ({
+          Survey: {
+            ...data?.Survey,
+            Questions: [...(data?.Survey?.Questions || []), createQuestion],
+          },
+        })
+      ),
   });
 
   const [createFormValues, onCreateFormChange, setFormValues] = useFormChange({

@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import styles from "../../styles/Home.module.css";
@@ -10,7 +10,7 @@ import { useToggle } from "hooks";
 import CreateQuestion from "../../components/CreateQuestion";
 import Link from "next/link";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 import { useUpdateOrder } from "hooks";
 
@@ -34,18 +34,19 @@ const SurveyPage = () => {
     skip: !Boolean(surveyId),
     variables: { surveyId },
   });
-  const questions = data?.Survey?.Questions || [];
-  const order = data?.Survey?.order || [];
 
-  const [orderedQuestions, setQuestions] = useState([]);
+  const questions = useMemo(() => data?.Survey?.Questions || [], [data]);
+  const order = useMemo(() => data?.Survey?.order || [], [data]);
+
+  const [orderedQuestions, setOrderedQuestions] = useState([]);
 
   useEffect(() => {
     const questionsByOrder = groupBy(questions, "id");
     const questionsInOrder = order
       .map((id) => questionsByOrder[id]?.[0])
       .filter(Boolean);
-    setQuestions(questionsInOrder);
-  }, [questions]);
+    setOrderedQuestions(questionsInOrder);
+  }, [questions, order]);
 
   const [showCreate, toggleCreateForm] = useToggle();
 
@@ -63,7 +64,7 @@ const SurveyPage = () => {
     );
 
     updateOrder(items.map(({ id }) => id));
-    setQuestions(items);
+    setOrderedQuestions(items);
   };
 
   const onCreateComplete = (id) => {

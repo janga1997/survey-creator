@@ -8,7 +8,10 @@ import { GET_SURVEYS } from "queries";
 const CreateSurvey = ({ closeForm }) => {
   const [createSurvey] = useMutation(CREATE_SURVEY, {
     onCompleted: closeForm,
-    refetchQueries: [GET_SURVEYS],
+    update: (cache, { data: { createSurvey } }) =>
+      cache.updateQuery({ query: GET_SURVEYS }, (data) => ({
+        allSurveys: [...data?.allSurveys, createSurvey],
+      })),
   });
 
   const [createFormValues, onCreateFormChange] = useFormChange({

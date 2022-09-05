@@ -32,9 +32,7 @@ export const useToggle = (initialValue = false) => {
 };
 
 export const useUpdateOrder = (id) => {
-  const [updateSurvey] = useMutation(UPDATE_ORDER, {
-    refetchQueries: [{ query: GET_QUESTIONS, variables: { surveyId: id } }],
-  });
+  const [updateSurvey] = useMutation(UPDATE_ORDER, {});
 
   const updateOrder = (order) => updateSurvey({ variables: { id, order } });
 

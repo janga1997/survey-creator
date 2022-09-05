@@ -9,7 +9,12 @@ import Link from "next/link";
 
 const SurveyRead = ({ index, id, title, toggle }) => {
   const [deleteSurvey] = useMutation(DELETE_SURVEY, {
-    refetchQueries: [GET_SURVEYS],
+    update: (cache, { data: { removeSurvey } }) =>
+      cache.updateQuery({ query: GET_SURVEYS }, (data) => ({
+        allSurveys: data?.allSurveys.filter(
+          ({ id }) => id !== removeSurvey?.id
+        ),
+      })),
   });
 
   const deleteFromButton = () => {
@@ -34,7 +39,6 @@ const SurveyRead = ({ index, id, title, toggle }) => {
 const SurveyEdit = ({ index, id, title, toggle }) => {
   const [updateSurvey] = useMutation(UPDATE_SURVEY, {
     onCompleted: toggle,
-    refetchQueries: [GET_SURVEYS],
   });
 
   const [updateFormValues, onUpdateFormChange] = useFormChange({

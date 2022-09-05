@@ -37,6 +37,18 @@ const QuestionRead = ({
       orderSet.delete(deletedId);
       updateOrder([...orderSet]);
     },
+    update: (cache, { data: { removeQuestion } }) =>
+      cache.updateQuery(
+        { query: GET_QUESTIONS, variables: { surveyId } },
+        (questionData) => ({
+          Survey: {
+            ...questionData?.Survey,
+            Questions: questionData?.Survey?.Questions.filter(
+              ({ id: removedId }) => removedId !== removeQuestion?.id
+            ),
+          },
+        })
+      ),
   });
 
   const deleteFromButton = () => {
@@ -83,7 +95,6 @@ const QuestionEdit = ({
 
   const [updateQuestion] = useMutation(UPDATE_QUESTION, {
     onCompleted: toggle,
-    refetchQueries: [{ query: GET_QUESTIONS, variables: { surveyId } }],
   });
 
   const [updateFormValues, onUpdateFormChange, setFormValues] = useFormChange({
