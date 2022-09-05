@@ -41,7 +41,7 @@ export const OptionsInput = ({ answerType, options, setFormValues }) => {
         <legend>Options For the Question</legend>
         <>
           {options.map((value, index) => (
-            <div key={value}>
+            <div key={index}>
               <input value={value} required onChange={onArrayChange(index)} />
               <button onClick={removeOption(index)}>Delete</button>
             </div>
