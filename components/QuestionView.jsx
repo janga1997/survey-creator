@@ -3,10 +3,10 @@ import React from "react";
 import { GET_QUESTIONS } from "queries";
 import { DELETE_QUESTION, UPDATE_QUESTION } from "mutations";
 
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
 
-import { useToggle, useFormChange } from "hooks";
+import { useToggle, useFormChange, useUpdateOrder } from "hooks";
 import { OptionsInput } from "./CreateQuestion";
 
 const QuestionRead = ({
@@ -22,8 +22,21 @@ const QuestionRead = ({
     query: { surveyId },
   } = useRouter();
 
+  const { data } = useQuery(GET_QUESTIONS, {
+    skip: !Boolean(surveyId),
+    variables: { surveyId },
+  });
+  const order = data?.Survey?.order || [];
+
+  const [updateOrder] = useUpdateOrder(surveyId);
+
   const [deleteQuestion] = useMutation(DELETE_QUESTION, {
-    refetchQueries: [{ query: GET_QUESTIONS, variables: { surveyId } }],
+    onCompleted: (deletedData) => {
+      const deletedId = deletedData?.removeQuestion?.id;
+      const orderSet = new Set(order);
+      orderSet.delete(deletedId);
+      updateOrder([...orderSet]);
+    },
   });
 
   const deleteFromButton = () => {

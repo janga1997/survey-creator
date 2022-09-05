@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import styles from "../../styles/Home.module.css";
@@ -12,7 +12,10 @@ import Link from "next/link";
 
 import { useState, useEffect } from "react";
 
+import { useUpdateOrder } from "hooks";
+
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { groupBy } from "lodash-es";
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -32,14 +35,21 @@ const SurveyPage = () => {
     variables: { surveyId },
   });
   const questions = data?.Survey?.Questions || [];
+  const order = data?.Survey?.order || [];
 
-  const [orderedQuestions, setQuestions] = useState(questions);
+  const [orderedQuestions, setQuestions] = useState([]);
 
   useEffect(() => {
-    setQuestions(questions);
+    const questionsByOrder = groupBy(questions, "id");
+    const questionsInOrder = order
+      .map((id) => questionsByOrder[id]?.[0])
+      .filter(Boolean);
+    setQuestions(questionsInOrder);
   }, [questions]);
 
   const [showCreate, toggleCreateForm] = useToggle();
+
+  const [updateOrder] = useUpdateOrder(surveyId);
 
   const onDragEnd = (result) => {
     if (!result.destination) {
@@ -52,7 +62,13 @@ const SurveyPage = () => {
       result.destination.index
     );
 
+    updateOrder(items.map(({ id }) => id));
     setQuestions(items);
+  };
+
+  const onCreateComplete = (id) => {
+    updateOrder([...order, id]);
+    toggleCreateForm();
   };
 
   return (
@@ -69,21 +85,18 @@ const SurveyPage = () => {
       <button onClick={toggleCreateForm}>Create Question</button>
 
       <main className={styles.main}>
-        {showCreate && <CreateQuestion closeForm={toggleCreateForm} />}
-        {/* {questions.map((question, index) => (
-          <QuestionView {...question} index={index} key={question.id} />
-        ))} */}
+        {showCreate && <CreateQuestion closeForm={onCreateComplete} />}
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="droppable">
-            {(provided, snapshot) => (
+            {(provided) => (
               <div {...provided.droppableProps} ref={provided.innerRef}>
                 {orderedQuestions.map((item, index) => (
                   <Draggable key={item.id} draggableId={item.id} index={index}>
-                    {(provided, snapshot) => (
+                    {(providedSecond) => (
                       <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
+                        ref={providedSecond.innerRef}
+                        {...providedSecond.draggableProps}
+                        {...providedSecond.dragHandleProps}
                       >
                         <QuestionView {...item} index={index} />
                       </div>

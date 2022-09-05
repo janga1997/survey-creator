@@ -1,3 +1,6 @@
+import { useMutation } from "@apollo/client";
+import { UPDATE_ORDER } from "mutations";
+import { GET_QUESTIONS } from "queries";
 import { useState } from "react";
 
 export const useFormChange = (initialState) => {
@@ -26,4 +29,14 @@ export const useToggle = (initialValue = false) => {
   const toggleValue = () => setBool(!boolValue);
 
   return [boolValue, toggleValue];
+};
+
+export const useUpdateOrder = (id) => {
+  const [updateSurvey] = useMutation(UPDATE_ORDER, {
+    refetchQueries: [{ query: GET_QUESTIONS, variables: { surveyId: id } }],
+  });
+
+  const updateOrder = (order) => updateSurvey({ variables: { id, order } });
+
+  return [updateOrder];
 };

@@ -51,6 +51,15 @@ export const UPDATE_SURVEY = gql`
   }
 `;
 
+export const UPDATE_ORDER = gql`
+  mutation UpdateOrder($id: ID!, $order: [String!]!) {
+    updateSurvey(id: $id, order: $order) {
+      id
+      order
+    }
+  }
+`;
+
 export const DELETE_QUESTION = gql`
   mutation DeleteQuestion($id: ID!) {
     removeQuestion(id: $id) {

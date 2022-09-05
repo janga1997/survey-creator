@@ -57,8 +57,10 @@ const CreateQuestion = ({ closeForm }) => {
   } = useRouter();
 
   const [createSurvey] = useMutation(CREATE_QUESTION, {
-    onCompleted: closeForm,
-    refetchQueries: [{ query: GET_QUESTIONS, variables: { surveyId } }],
+    onCompleted: (data) => {
+      const id = data?.createQuestion?.id;
+      closeForm(id);
+    },
   });
 
   const [createFormValues, onCreateFormChange, setFormValues] = useFormChange({

@@ -13,6 +13,7 @@ export const GET_QUESTIONS = gql`
   query GetQuestions($surveyId: ID!) {
     Survey(id: $surveyId) {
       id
+      order
       Questions {
         id
         text

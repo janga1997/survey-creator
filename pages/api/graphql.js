@@ -4,7 +4,7 @@ import jsonGraphqlExpress from "json-graphql-server";
 const app = express();
 const data = {
   surveys: [
-    { id: 1, title: "Lorem Ipsum" },
+    { id: 1, title: "Lorem Ipsum", order: ["1", "2", "3"] },
     { id: 2, title: "Sic Dolor amet" },
   ],
   questions: [
