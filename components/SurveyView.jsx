@@ -13,7 +13,6 @@ const SurveyRead = ({ index, id, title, toggle }) => {
   });
 
   const deleteFromButton = () => {
-    console.log(id);
     deleteSurvey({ variables: { id } });
   };
 

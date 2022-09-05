@@ -10,6 +10,18 @@ import { useToggle } from "hooks";
 import CreateQuestion from "../../components/CreateQuestion";
 import Link from "next/link";
 
+import { useState, useEffect } from "react";
+
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+
+const reorder = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
+};
+
 const SurveyPage = () => {
   const {
     query: { surveyId },
@@ -21,7 +33,27 @@ const SurveyPage = () => {
   });
   const questions = data?.Survey?.Questions || [];
 
+  const [orderedQuestions, setQuestions] = useState(questions);
+
+  useEffect(() => {
+    setQuestions(questions);
+  }, [questions]);
+
   const [showCreate, toggleCreateForm] = useToggle();
+
+  const onDragEnd = (result) => {
+    if (!result.destination) {
+      return;
+    }
+
+    const items = reorder(
+      orderedQuestions,
+      result.source.index,
+      result.destination.index
+    );
+
+    setQuestions(items);
+  };
 
   return (
     <div className={styles.container}>
@@ -38,9 +70,31 @@ const SurveyPage = () => {
 
       <main className={styles.main}>
         {showCreate && <CreateQuestion closeForm={toggleCreateForm} />}
-        {questions.map((question, index) => (
+        {/* {questions.map((question, index) => (
           <QuestionView {...question} index={index} key={question.id} />
-        ))}
+        ))} */}
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="droppable">
+            {(provided, snapshot) => (
+              <div {...provided.droppableProps} ref={provided.innerRef}>
+                {orderedQuestions.map((item, index) => (
+                  <Draggable key={item.id} draggableId={item.id} index={index}>
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <QuestionView {...item} index={index} />
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       </main>
     </div>
   );

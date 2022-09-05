@@ -7,8 +7,6 @@ import { GET_QUESTIONS } from "queries";
 import { useRouter } from "next/router";
 
 export const OptionsInput = ({ answerType, options, setFormValues }) => {
-  console.log(options);
-
   const removeOption = (index) => () => {
     setFormValues((values) => ({
       ...values,
