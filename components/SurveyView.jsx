@@ -36,7 +36,7 @@ const SurveyRead = ({ id, title, toggle, order }) => {
       gap="5px"
       borderWidth="2px"
       borderRadius="10px"
-      padding="1rem"
+      padding={["0.5rem", "1rem"]}
       width="300px"
     >
       <NextLink href={`/survey/${id}`} passHref>

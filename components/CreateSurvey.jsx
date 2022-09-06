@@ -45,7 +45,7 @@ const CreateSurvey = ({ closeForm }) => {
 
       <HStack justifyContent="space-between" width="100%">
         <Button type="submit" size="sm">
-          Update
+          Create
         </Button>
         <Button onClick={closeForm} type="button" size="sm">
           Cancel

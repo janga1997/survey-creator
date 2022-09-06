@@ -65,8 +65,8 @@ const QuestionRead = ({ id, text, toggle, required, answerType, options }) => {
       gap="20px"
       borderWidth="4px"
       borderRadius="10px"
-      padding="1rem"
-      width="1000px"
+      padding={"1rem"}
+      width={["250px", "800px"]}
       justifyContent="space-between"
       alignItems="stretch"
     >
@@ -149,7 +149,6 @@ const QuestionEdit = ({
       borderWidth="4px"
       borderRadius="10px"
       padding="1rem"
-      width="800px"
     >
       <Input
         value={updateFormValues.text}
@@ -159,7 +158,7 @@ const QuestionEdit = ({
         onChange={onUpdateFormChange}
       />
 
-      <HStack justifyContent="space-between" width="100%">
+      <HStack justifyContent="space-between">
         <label>
           Answer Type:
           <Select

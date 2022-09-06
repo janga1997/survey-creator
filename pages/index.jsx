@@ -17,8 +17,18 @@ const Home = () => {
   const [showCreate, toggleCreateForm] = useToggle();
 
   return (
-    <VStack gap="50px" padding="50px" alignItems="center" alignContent="center">
-      <HStack justifyContent="space-between" width="100%">
+    <VStack
+      gap="50px"
+      padding={["2rem", "3rem"]}
+      alignItems="center"
+      alignContent="center"
+    >
+      <HStack
+        justifyContent="space-between"
+        width="100%"
+        gap="20px"
+        flexWrap="wrap"
+      >
         <Heading>List of Surveys</Heading>
         <Button onClick={toggleCreateForm} rightIcon={<AddIcon />}>
           Create Form
@@ -32,10 +42,10 @@ const Home = () => {
         flexWrap="wrap"
         alignItems="start"
       >
+        {showCreate && <CreateSurvey closeForm={toggleCreateForm} />}
         {surveys.map((survey, index) => (
           <SurveyView {...survey} index={index} key={survey.id} />
         ))}
-        {showCreate && <CreateSurvey closeForm={toggleCreateForm} />}
       </HStack>
     </VStack>
   );
