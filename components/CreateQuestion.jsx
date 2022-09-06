@@ -51,18 +51,18 @@ export const OptionsInput = ({ answerType, options, setFormValues }) => {
           <Heading as="legend" size="sm">
             Options For the Question
           </Heading>
-          <Button onClick={addOption} rightIcon={<AddIcon />} size="sm">
-            Add
-          </Button>
         </HStack>
         {options.map((value, index) => (
           <HStack key={index}>
-            <Input value={value} required onChange={onArrayChange(index)} />
             <Button onClick={removeOption(index)} size="sm">
               Delete
             </Button>
+            <Input value={value} required onChange={onArrayChange(index)} />
           </HStack>
         ))}
+        <Button onClick={addOption} rightIcon={<AddIcon />} size="sm">
+          Add
+        </Button>
       </VStack>
     )
   );

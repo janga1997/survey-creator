@@ -136,14 +136,16 @@ const QuestionEdit = ({
       onSubmit={updateSurveyInForm}
       gap="20px"
       alignItems="start"
-      borderWidth="2px"
+      borderWidth="4px"
       borderRadius="10px"
       padding="1rem"
+      minWidth="800px"
     >
       <Input
         value={updateFormValues.text}
         name="text"
         type="text"
+        fontSize="xl"
         onChange={onUpdateFormChange}
       />
 
