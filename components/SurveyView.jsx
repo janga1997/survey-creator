@@ -5,9 +5,10 @@ import { DELETE_SURVEY, UPDATE_SURVEY } from "mutations";
 import { GET_SURVEYS } from "queries";
 
 import { useToggle, useFormChange } from "hooks";
-import Link from "next/link";
+import NextLink from "next/link";
+import { Button, Heading, HStack, Input, Link, VStack } from "@chakra-ui/react";
 
-const SurveyRead = ({ index, id, title, toggle, order }) => {
+const SurveyRead = ({ id, title, toggle, order }) => {
   const [deleteSurvey] = useMutation(DELETE_SURVEY, {
     update: (cache, { data: { removeSurvey } }) =>
       cache.updateQuery({ query: GET_SURVEYS }, (data) => ({
@@ -22,22 +23,34 @@ const SurveyRead = ({ index, id, title, toggle, order }) => {
   };
 
   return (
-    <div>
-      <h2>{index}</h2>
-      <h2>
-        <Link href={`/survey/${id}`}>{title}</Link>
-      </h2>
-      <h3>{`${order?.length || 0} questions in this survey`}</h3>
+    <VStack
+      gap="5px"
+      borderWidth="2px"
+      borderRadius="10px"
+      padding="1rem"
+      width="300px"
+    >
+      <NextLink href={`/survey/${id}`} passHref>
+        <Link fontSize="1.5rem">{title}</Link>
+      </NextLink>
 
-      <div>
-        <button onClick={toggle}>Edit</button>
-        <button onClick={deleteFromButton}>Delete</button>
-      </div>
-    </div>
+      <Heading as="h3" size="sm">{`${
+        order?.length || 0
+      } questions in this survey`}</Heading>
+
+      <HStack justifyContent="space-between" width="100%">
+        <Button onClick={toggle} size="sm">
+          Edit
+        </Button>
+        <Button onClick={deleteFromButton} size="sm">
+          Delete
+        </Button>
+      </HStack>
+    </VStack>
   );
 };
 
-const SurveyEdit = ({ index, id, title, toggle }) => {
+const SurveyEdit = ({ id, title, toggle }) => {
   const [updateSurvey] = useMutation(UPDATE_SURVEY, {
     onCompleted: toggle,
   });
@@ -54,20 +67,31 @@ const SurveyEdit = ({ index, id, title, toggle }) => {
   };
 
   return (
-    <form onSubmit={updateSurveyInForm}>
-      <h2>{index}</h2>
-      <input
+    <VStack
+      as="form"
+      onSubmit={updateSurveyInForm}
+      gap="5px"
+      borderWidth="2px"
+      borderRadius="10px"
+      padding="1rem"
+      width="300px"
+    >
+      <Input
         value={updateFormValues.title}
         name="title"
         type="text"
         onChange={onUpdateFormChange}
       />
 
-      <button type="submit">Update</button>
-      <button onClick={toggle} type="button">
-        Cancel
-      </button>
-    </form>
+      <HStack justifyContent="space-between" width="100%">
+        <Button type="submit" size="sm">
+          Update
+        </Button>
+        <Button onClick={toggle} type="button" size="sm">
+          Cancel
+        </Button>
+      </HStack>
+    </VStack>
   );
 };
 

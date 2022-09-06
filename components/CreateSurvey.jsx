@@ -4,6 +4,7 @@ import { CREATE_SURVEY } from "../mutations";
 
 import { useFormChange } from "hooks";
 import { GET_SURVEYS } from "queries";
+import { Button, HStack, Input, VStack } from "@chakra-ui/react";
 
 const CreateSurvey = ({ closeForm }) => {
   const [createSurvey] = useMutation(CREATE_SURVEY, {
@@ -25,19 +26,32 @@ const CreateSurvey = ({ closeForm }) => {
   };
 
   return (
-    <form onSubmit={createSurveyInForm}>
-      <input
+    <VStack
+      as="form"
+      onSubmit={createSurveyInForm}
+      gap="5px"
+      borderWidth="2px"
+      borderRadius="10px"
+      padding="1rem"
+      width="300px"
+    >
+      <Input
+        fontSize="1.5rem"
         value={createFormValues.title}
         name="title"
         type="text"
         onChange={onCreateFormChange}
       />
 
-      <button type="submit">Create</button>
-      <button onClick={closeForm} type="button">
-        Cancel
-      </button>
-    </form>
+      <HStack justifyContent="space-between" width="100%">
+        <Button type="submit" size="sm">
+          Update
+        </Button>
+        <Button onClick={closeForm} type="button" size="sm">
+          Cancel
+        </Button>
+      </HStack>
+    </VStack>
   );
 };
 

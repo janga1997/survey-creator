@@ -5,6 +5,7 @@ export const CREATE_SURVEY = gql`
     createSurvey(title: $title) {
       id
       title
+      order
     }
   }
 `;
@@ -47,6 +48,7 @@ export const UPDATE_SURVEY = gql`
     updateSurvey(id: $id, title: $title) {
       id
       title
+      order
     }
   }
 `;

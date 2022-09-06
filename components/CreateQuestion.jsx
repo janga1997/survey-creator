@@ -5,6 +5,17 @@ import { CREATE_QUESTION } from "../mutations";
 import { useFormChange } from "hooks";
 import { GET_QUESTIONS } from "queries";
 import { useRouter } from "next/router";
+import {
+  Button,
+  Switch,
+  Input,
+  Heading,
+  Select,
+  HStack,
+  VStack,
+} from "@chakra-ui/react";
+import Head from "next/head";
+import { AddIcon } from "@chakra-ui/icons";
 
 export const OptionsInput = ({ answerType, options, setFormValues }) => {
   const removeOption = (index) => () => {
@@ -35,23 +46,29 @@ export const OptionsInput = ({ answerType, options, setFormValues }) => {
 
   return (
     answerType.includes("SELECT") && (
-      <fieldset>
-        <legend>Options For the Question</legend>
-        <>
-          {options.map((value, index) => (
-            <div key={index}>
-              <input value={value} required onChange={onArrayChange(index)} />
-              <button onClick={removeOption(index)}>Delete</button>
-            </div>
-          ))}
-        </>
-        <button onClick={addOption}>Add</button>
-      </fieldset>
+      <VStack as="fieldset" border="2px" borderRadius="10px" padding="1rem">
+        <HStack justifyContent="space-between" width="100%">
+          <Heading as="legend" size="sm">
+            Options For the Question
+          </Heading>
+          <Button onClick={addOption} rightIcon={<AddIcon />} size="sm">
+            Add
+          </Button>
+        </HStack>
+        {options.map((value, index) => (
+          <HStack key={index}>
+            <Input value={value} required onChange={onArrayChange(index)} />
+            <Button onClick={removeOption(index)} size="sm">
+              Delete
+            </Button>
+          </HStack>
+        ))}
+      </VStack>
     )
   );
 };
 
-const CreateQuestion = ({ closeForm }) => {
+const CreateQuestion = ({ closeForm, cancel }) => {
   const {
     query: { surveyId },
   } = useRouter();
@@ -87,22 +104,32 @@ const CreateQuestion = ({ closeForm }) => {
   };
 
   return (
-    <form onSubmit={createSurveyInForm}>
-      <fieldset>
-        <legend>Required Inputs</legend>
-        <label>
-          Question Text:
-          <input
-            value={createFormValues.text}
-            name="text"
-            type="text"
-            required
-            onChange={onCreateFormChange}
-          />
-        </label>
+    <VStack
+      as="form"
+      onSubmit={createSurveyInForm}
+      gap="20px"
+      alignItems="start"
+      borderWidth="2px"
+      borderRadius="10px"
+      padding="1rem"
+    >
+      <Heading as="legend" size="md">
+        Required Inputs
+      </Heading>
+      <label>
+        Question Text:
+        <Input
+          value={createFormValues.text}
+          name="text"
+          type="text"
+          required
+          onChange={onCreateFormChange}
+        />
+      </label>
+      <HStack justifyContent="space-between" width="100%">
         <label>
           Answer Type:
-          <select
+          <Select
             value={createFormValues.answerType}
             onChange={onCreateFormChange}
             name="answerType"
@@ -112,29 +139,36 @@ const CreateQuestion = ({ closeForm }) => {
             <option value="NUMBER">Number</option>
             <option value="SELECT">Single Choice</option>
             <option value="MULTISELECT">Multiple Choice</option>
-          </select>
+          </Select>
         </label>
         <label>
           Required:
-          <input
-            checked={createFormValues.required}
-            name="required"
-            type="checkbox"
-            onChange={onCreateFormChange}
-          />
+          <div>
+            <Switch
+              size="lg"
+              checked={createFormValues.required}
+              name="required"
+              type="checkbox"
+              onChange={onCreateFormChange}
+            />
+          </div>
         </label>
-      </fieldset>
+      </HStack>
       <OptionsInput
         options={createFormValues.options}
         setFormValues={setFormValues}
         answerType={createFormValues.answerType}
       />
 
-      <button type="submit">Create</button>
-      <button onClick={closeForm} type="button">
-        Cancel
-      </button>
-    </form>
+      <HStack justifyContent="space-between" width="100%">
+        <Button type="submit" size="sm">
+          Create
+        </Button>
+        <Button onClick={cancel} type="button" size="sm">
+          Cancel
+        </Button>
+      </HStack>
+    </VStack>
   );
 };
 
