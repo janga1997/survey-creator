@@ -16,6 +16,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { SurveyForm } from "./CreateSurvey";
 
 const SurveyRead = ({ id, title, toggle, order }) => {
   const [deleteSurvey] = useMutation(DELETE_SURVEY, {
@@ -81,31 +82,12 @@ const SurveyEdit = ({ id, title, toggle }) => {
   };
 
   return (
-    <VStack
-      as="form"
+    <SurveyForm
       onSubmit={updateSurveyInForm}
-      gap="5px"
-      borderWidth="2px"
-      borderRadius="10px"
-      padding="1rem"
-      width="300px"
-    >
-      <Input
-        value={updateFormValues.title}
-        name="title"
-        type="text"
-        onChange={onUpdateFormChange}
-      />
-
-      <HStack justifyContent="space-between" width="100%">
-        <Button type="submit" size="sm">
-          Update
-        </Button>
-        <Button onClick={toggle} type="button" size="sm">
-          Cancel
-        </Button>
-      </HStack>
-    </VStack>
+      formValues={updateFormValues}
+      onChange={onUpdateFormChange}
+      onCancel={toggle}
+    />
   );
 };
 

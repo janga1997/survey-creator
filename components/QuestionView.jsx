@@ -7,15 +7,12 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
 
 import { useToggle, useFormChange, useUpdateOrder } from "hooks";
-import { OptionsInput } from "./CreateQuestion";
+import { QuestionForm } from "./CreateQuestion";
 import {
-  Button,
   Heading,
   HStack,
   IconButton,
-  Input,
   ListItem,
-  Select,
   Switch,
   UnorderedList,
   VStack,
@@ -141,65 +138,13 @@ const QuestionEdit = ({
     return false;
   };
   return (
-    <VStack
-      as="form"
+    <QuestionForm
       onSubmit={updateSurveyInForm}
-      gap="20px"
-      alignItems="start"
-      borderWidth="4px"
-      borderRadius="10px"
-      padding="1rem"
-    >
-      <Input
-        value={updateFormValues.text}
-        name="text"
-        type="text"
-        fontSize="xl"
-        onChange={onUpdateFormChange}
-      />
-
-      <HStack justifyContent="space-between">
-        <label>
-          Answer Type:
-          <Select
-            value={updateFormValues.answerType}
-            onChange={onUpdateFormChange}
-            name="answerType"
-          >
-            <option value="TEXT">Text</option>
-            <option value="BOOLEAN">Boolean</option>
-            <option value="NUMBER">Number</option>
-            <option value="SELECT">Single Choice</option>
-            <option value="MULTISELECT">Multiple Choice</option>
-          </Select>
-        </label>
-        <label>
-          Required:
-          <div>
-            <Switch
-              size="lg"
-              isChecked={updateFormValues.required}
-              name="required"
-              type="checkbox"
-              onChange={onUpdateFormChange}
-            />
-          </div>
-        </label>
-      </HStack>
-      <OptionsInput
-        options={updateFormValues.options}
-        setFormValues={setFormValues}
-        answerType={updateFormValues.answerType}
-      />
-      <HStack justifyContent="space-between" width="100%">
-        <Button type="submit" size="sm">
-          Update
-        </Button>
-        <Button onClick={toggle} type="button" size="sm">
-          Cancel
-        </Button>
-      </HStack>
-    </VStack>
+      onChange={onUpdateFormChange}
+      onCancel={toggle}
+      formValues={updateFormValues}
+      setFormValues={setFormValues}
+    />
   );
 };
 

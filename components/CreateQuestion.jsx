@@ -14,10 +14,9 @@ import {
   HStack,
   VStack,
 } from "@chakra-ui/react";
-import Head from "next/head";
 import { AddIcon } from "@chakra-ui/icons";
 
-export const OptionsInput = ({ answerType, options, setFormValues }) => {
+const OptionsInput = ({ answerType, options, setFormValues }) => {
   const removeOption = (index) => () => {
     setFormValues((values) => ({
       ...values,
@@ -68,6 +67,82 @@ export const OptionsInput = ({ answerType, options, setFormValues }) => {
   );
 };
 
+export const QuestionForm = ({
+  onChange,
+  onCancel,
+  onSubmit,
+  formValues,
+  setFormValues,
+}) => {
+  return (
+    <VStack
+      as="form"
+      onSubmit={onSubmit}
+      gap="20px"
+      alignItems="start"
+      borderWidth="2px"
+      borderRadius="10px"
+      padding="1rem"
+    >
+      <Heading as="legend" size="md">
+        Required Inputs
+      </Heading>
+      <label>
+        Question Text:
+        <Input
+          value={formValues.text}
+          name="text"
+          type="text"
+          required
+          onChange={onChange}
+        />
+      </label>
+      <HStack justifyContent="space-between" width="100%">
+        <label>
+          Answer Type:
+          <Select
+            value={formValues.answerType}
+            onChange={onChange}
+            name="answerType"
+          >
+            <option value="TEXT">Text</option>
+            <option value="BOOLEAN">Boolean</option>
+            <option value="NUMBER">Number</option>
+            <option value="SELECT">Single Choice</option>
+            <option value="MULTISELECT">Multiple Choice</option>
+          </Select>
+        </label>
+        <label>
+          Required:
+          <div>
+            <Switch
+              size="lg"
+              checked={formValues.required}
+              name="required"
+              type="checkbox"
+              onChange={onChange}
+            />
+          </div>
+        </label>
+      </HStack>
+      <OptionsInput
+        options={formValues.options}
+        setFormValues={setFormValues}
+        answerType={formValues.answerType}
+      />
+
+      <HStack justifyContent="space-between" width="100%">
+        <Button type="submit" size="sm">
+          Create
+        </Button>
+        <Button onClick={onCancel} type="button" size="sm">
+          Cancel
+        </Button>
+      </HStack>
+    </VStack>
+  );
+};
+
 const CreateQuestion = ({ closeForm, cancel }) => {
   const {
     query: { surveyId },
@@ -104,71 +179,13 @@ const CreateQuestion = ({ closeForm, cancel }) => {
   };
 
   return (
-    <VStack
-      as="form"
+    <QuestionForm
       onSubmit={createSurveyInForm}
-      gap="20px"
-      alignItems="start"
-      borderWidth="2px"
-      borderRadius="10px"
-      padding="1rem"
-    >
-      <Heading as="legend" size="md">
-        Required Inputs
-      </Heading>
-      <label>
-        Question Text:
-        <Input
-          value={createFormValues.text}
-          name="text"
-          type="text"
-          required
-          onChange={onCreateFormChange}
-        />
-      </label>
-      <HStack justifyContent="space-between" width="100%">
-        <label>
-          Answer Type:
-          <Select
-            value={createFormValues.answerType}
-            onChange={onCreateFormChange}
-            name="answerType"
-          >
-            <option value="TEXT">Text</option>
-            <option value="BOOLEAN">Boolean</option>
-            <option value="NUMBER">Number</option>
-            <option value="SELECT">Single Choice</option>
-            <option value="MULTISELECT">Multiple Choice</option>
-          </Select>
-        </label>
-        <label>
-          Required:
-          <div>
-            <Switch
-              size="lg"
-              checked={createFormValues.required}
-              name="required"
-              type="checkbox"
-              onChange={onCreateFormChange}
-            />
-          </div>
-        </label>
-      </HStack>
-      <OptionsInput
-        options={createFormValues.options}
-        setFormValues={setFormValues}
-        answerType={createFormValues.answerType}
-      />
-
-      <HStack justifyContent="space-between" width="100%">
-        <Button type="submit" size="sm">
-          Create
-        </Button>
-        <Button onClick={cancel} type="button" size="sm">
-          Cancel
-        </Button>
-      </HStack>
-    </VStack>
+      onCancel={cancel}
+      onChange={onCreateFormChange}
+      formValues={createFormValues}
+      setFormValues={setFormValues}
+    />
   );
 };
 
