@@ -12,6 +12,7 @@ import {
   Button,
   Heading,
   HStack,
+  IconButton,
   Input,
   ListItem,
   Select,
@@ -19,6 +20,7 @@ import {
   UnorderedList,
   VStack,
 } from "@chakra-ui/react";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 
 const QuestionRead = ({ id, text, toggle, required, answerType, options }) => {
   const {
@@ -59,44 +61,52 @@ const QuestionRead = ({ id, text, toggle, required, answerType, options }) => {
   };
 
   return (
-    <HStack
-      gap="50px"
+    <VStack
+      gap="20px"
       borderWidth="4px"
       borderRadius="10px"
-      padding="2rem"
-      width="100%"
+      padding="1rem"
+      width="1000px"
       justifyContent="space-between"
+      alignItems="stretch"
     >
-      <VStack justifyItems="start" alignItems="start">
-        <Heading as="h2" size="lg">
-          {text}
-        </Heading>
-        {answerType.includes("SELECT") && (
-          <VStack borderWidth="2px" padding="1rem">
-            <Heading size="md">Options</Heading>
-            <UnorderedList label="Options">
-              {options.map((value) => (
-                <ListItem key={value} fontSize="2xl">
-                  {value}
-                </ListItem>
-              ))}
-            </UnorderedList>
-          </VStack>
-        )}
-      </VStack>
-      <VStack>
-        <Heading as="span" size="md">{`Answer Type: ${answerType}`}</Heading>
+      <Heading as="h2" size="lg">
+        {text}
+      </Heading>
+      <HStack justifyContent="space-between">
+        <Heading as="span" size="md">{`Type: ${answerType}`}</Heading>
         <label>
           Required:
           <Switch isChecked={Boolean(required)} isReadOnly size="lg" />
         </label>
-      </VStack>
+      </HStack>
 
-      <VStack justifyContent="space-between">
-        <Button onClick={toggle}>Edit</Button>
-        <Button onClick={deleteFromButton}>Delete</Button>
-      </VStack>
-    </HStack>
+      <HStack justifyContent="space-between">
+        <IconButton
+          aria-label={`Edit question`}
+          icon={<EditIcon />}
+          onClick={toggle}
+        />
+        <IconButton
+          colorScheme="red"
+          aria-label={`Delete question`}
+          icon={<DeleteIcon />}
+          onClick={deleteFromButton}
+        />
+      </HStack>
+      {answerType.includes("SELECT") && (
+        <VStack borderWidth="2px" padding="1rem" alignItems="start">
+          <Heading size="md">Options</Heading>
+          <UnorderedList label="Options">
+            {options.map((value) => (
+              <ListItem key={value} fontSize="2xl">
+                {value}
+              </ListItem>
+            ))}
+          </UnorderedList>
+        </VStack>
+      )}
+    </VStack>
   );
 };
 
@@ -139,7 +149,7 @@ const QuestionEdit = ({
       borderWidth="4px"
       borderRadius="10px"
       padding="1rem"
-      minWidth="800px"
+      width="800px"
     >
       <Input
         value={updateFormValues.text}

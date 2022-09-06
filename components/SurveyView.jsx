@@ -6,7 +6,16 @@ import { GET_SURVEYS } from "queries";
 
 import { useToggle, useFormChange } from "hooks";
 import NextLink from "next/link";
-import { Button, Heading, HStack, Input, Link, VStack } from "@chakra-ui/react";
+import {
+  Button,
+  Heading,
+  HStack,
+  IconButton,
+  Input,
+  Link,
+  VStack,
+} from "@chakra-ui/react";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 
 const SurveyRead = ({ id, title, toggle, order }) => {
   const [deleteSurvey] = useMutation(DELETE_SURVEY, {
@@ -39,12 +48,17 @@ const SurveyRead = ({ id, title, toggle, order }) => {
       } questions in this survey`}</Heading>
 
       <HStack justifyContent="space-between" width="100%">
-        <Button onClick={toggle} size="sm">
-          Edit
-        </Button>
-        <Button onClick={deleteFromButton} size="sm">
-          Delete
-        </Button>
+        <IconButton
+          aria-label={`Edit ${title}`}
+          icon={<EditIcon />}
+          onClick={toggle}
+        />
+        <IconButton
+          colorScheme="red"
+          aria-label={`Delete ${title}`}
+          icon={<DeleteIcon />}
+          onClick={deleteFromButton}
+        />
       </HStack>
     </VStack>
   );
