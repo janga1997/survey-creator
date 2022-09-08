@@ -107,16 +107,12 @@ const SurveyPage = () => {
         />
       )}
 
-      <VStack as="main" gap="50px" alignItems="start" width="100%">
+      <VStack as="main" alignItems={["center", "center", "start"]} width="100%">
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="droppable">
             {(provided) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                style={{ width: "100%" }}
-              >
-                <VStack gap="50px" alignItems="start" width="100%">
+              <div {...provided.droppableProps} ref={provided.innerRef}>
+                <VStack gap="50px">
                   {orderedQuestions.map((item, index) => (
                     <Draggable
                       key={item.id}

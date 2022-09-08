@@ -63,7 +63,7 @@ const QuestionRead = ({ id, text, toggle, required, answerType, options }) => {
       borderWidth="4px"
       borderRadius="10px"
       padding={"1rem"}
-      width={["250px", "800px"]}
+      width={["300px", "400px", "600px", "900px"]}
       justifyContent="space-between"
       alignItems="stretch"
     >
