@@ -139,6 +139,7 @@ const QuestionEdit = ({
   };
   return (
     <QuestionForm
+      edit
       onSubmit={updateSurveyInForm}
       onChange={onUpdateFormChange}
       onCancel={toggle}

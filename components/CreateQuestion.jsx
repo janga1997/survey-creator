@@ -68,6 +68,7 @@ const OptionsInput = ({ answerType, options, setFormValues }) => {
 };
 
 export const QuestionForm = ({
+  edit,
   onChange,
   onCancel,
   onSubmit,
@@ -83,27 +84,34 @@ export const QuestionForm = ({
       borderWidth="2px"
       borderRadius="10px"
       padding="1rem"
+      width={["300px", "400px", "600px", "900px"]}
     >
-      <Heading as="legend" size="md">
-        Required Inputs
-      </Heading>
-      <label>
-        Question Text:
-        <Input
-          value={formValues.text}
-          name="text"
-          type="text"
-          required
-          onChange={onChange}
-        />
-      </label>
+      <Input
+        fontSize="1.875rem"
+        fontWeight="bolder"
+        value={formValues.text}
+        name="text"
+        type="text"
+        required
+        aria-label="Question Text:"
+        onChange={onChange}
+      />
       <HStack justifyContent="space-between" width="100%">
-        <label>
-          Answer Type:
+        <label
+          style={{
+            display: "flex",
+            alignItems: "center",
+            fontSize: "1.25rem",
+            fontWeight: "bold",
+          }}
+        >
+          Type:
           <Select
             value={formValues.answerType}
             onChange={onChange}
             name="answerType"
+            fontWeight="bold"
+            fontSize="1.25rem"
           >
             <option value="TEXT">Text</option>
             <option value="BOOLEAN">Boolean</option>
@@ -117,7 +125,7 @@ export const QuestionForm = ({
           <div>
             <Switch
               size="lg"
-              checked={formValues.required}
+              isChecked={formValues.required}
               name="required"
               type="checkbox"
               onChange={onChange}
@@ -133,7 +141,7 @@ export const QuestionForm = ({
 
       <HStack justifyContent="space-between" width="100%">
         <Button type="submit" size="sm">
-          Create
+          {edit ? "Update" : "Create"}
         </Button>
         <Button onClick={onCancel} type="button" size="sm">
           Cancel
