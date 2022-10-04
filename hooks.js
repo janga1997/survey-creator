@@ -1,6 +1,10 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { groupBy } from "lodash-es";
-import { UPDATE_FOLDER_ORDER, UPDATE_SURVEY_ORDER } from "mutations";
+import {
+  DELETE_FOLDER,
+  UPDATE_FOLDER_ORDER,
+  UPDATE_SURVEY_ORDER,
+} from "mutations";
 import { useRouter } from "next/router";
 import { GET_SURVEY_DATA } from "queries";
 import { useState } from "react";
@@ -100,4 +104,38 @@ export const reorder = (list, startIndex, endIndex) => {
   result.splice(endIndex, 0, removed);
 
   return result;
+};
+
+export const useDeleteFolder = (folderId, parentFolderId) => {
+  const {
+    query: { surveyId },
+  } = useRouter();
+
+  const { order: surveyOrder } = useGetSurveyData();
+  const [updateSurveyOrder] = useUpdateSurveyOrder();
+
+  const { order: folderOrder } = useGetFolderRow(parentFolderId);
+  const [updateFolderOrder] = useUpdateFolderOrder();
+
+  const [deleteFoldersAndQuestions, output] = useMutation(DELETE_FOLDER, {
+    onCompleted: () => {
+      const deletedId = folderId;
+      const order = parentFolderId ? folderOrder : surveyOrder;
+
+      const orderSet = new Set(order);
+      orderSet.delete(deletedId);
+
+      if (parentFolderId) {
+        updateFolderOrder(parentFolderId, [...orderSet]);
+      } else {
+        updateSurveyOrder([...orderSet]);
+      }
+    },
+    refetchQueries: [{ query: GET_SURVEY_DATA, variables: { surveyId } }],
+  });
+  const deleteFolder = () => {
+    deleteFoldersAndQuestions({ variables: { folderId } });
+  };
+
+  return [deleteFolder, output];
 };

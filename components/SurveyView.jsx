@@ -4,7 +4,7 @@ import { useMutation } from "@apollo/client";
 import { DELETE_SURVEY, UPDATE_SURVEY } from "mutations";
 import { GET_SURVEYS } from "queries";
 
-import { useToggle, useFormChange } from "hooks";
+import { useToggle, useFormChange, useGetSurveyData } from "hooks";
 import NextLink from "next/link";
 import {
   Button,

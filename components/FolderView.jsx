@@ -17,6 +17,7 @@ import {
   useToggle,
   useUpdateFolderOrder,
   reorder,
+  useDeleteFolder,
 } from "hooks";
 import AddQuestionOrFolder from "./AddQuestionOrFolder";
 import CreateQuestion from "./CreateQuestion";
@@ -24,12 +25,14 @@ import CreateFolder from "./CreateFolder";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
-const FolderView = ({ id, name, provided }) => {
+const FolderView = ({ id, name, provided, folder_id }) => {
   const [showQuestionCreate, toggleQuestionCreateForm] = useToggle();
   const [showFolderCreate, toggleFolderCreateForm] = useToggle();
   const { row } = useGetFolderRow(id);
 
   const [updateOrder] = useUpdateFolderOrder();
+
+  const [deleteFolder] = useDeleteFolder(id, folder_id);
 
   const onDragEnd = (result) => {
     if (!result.destination) {
@@ -70,6 +73,7 @@ const FolderView = ({ id, name, provided }) => {
               // isLoading={loading}
               aria-label={`Delete folder`}
               icon={<DeleteIcon />}
+              onClick={deleteFolder}
             />
           </HStack>
         </HStack>

@@ -131,3 +131,11 @@ export const UPDATE_FOLDER_ORDER = gql`
     }
   }
 `;
+
+export const DELETE_FOLDER = gql`
+  mutation DeleteFolder($folderId: uuid!) {
+    delete_Folder_by_pk(id: $folderId) {
+      id
+    }
+  }
+`;
