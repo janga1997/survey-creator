@@ -11,7 +11,7 @@ import { Button, Divider, Heading, HStack, VStack } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
 const Home = () => {
-  const { data } = useQuery(GET_SURVEYS);
+  const { data } = useQuery(GET_SURVEYS, { fetchPolicy: "cache-and-network" });
   const surveys = data?.Survey || [];
 
   const [showCreate, toggleCreateForm] = useToggle();

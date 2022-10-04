@@ -18,7 +18,7 @@ import {
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { SurveyForm } from "./CreateSurvey";
 
-const SurveyRead = ({ id, title, toggle, order }) => {
+const SurveyRead = ({ id, title, toggle, order, Questions_aggregate }) => {
   const [deleteSurvey] = useMutation(DELETE_SURVEY, {
     update: (cache, { data: { delete_Survey_by_pk } }) =>
       cache.updateQuery({ query: GET_SURVEYS }, (data) => ({
@@ -29,6 +29,8 @@ const SurveyRead = ({ id, title, toggle, order }) => {
   const deleteFromButton = () => {
     deleteSurvey({ variables: { id } });
   };
+
+  const questionCount = Questions_aggregate?.aggregate?.count;
 
   return (
     <VStack
@@ -42,9 +44,10 @@ const SurveyRead = ({ id, title, toggle, order }) => {
         <Link fontSize="1.5rem">{title}</Link>
       </NextLink>
 
-      <Heading as="h3" size="sm">{`${
-        order?.length || 0
-      } questions in this survey`}</Heading>
+      <Heading
+        as="h3"
+        size="sm"
+      >{`${questionCount} questions in this survey`}</Heading>
 
       <HStack justifyContent="space-between" width="100%">
         <IconButton

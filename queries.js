@@ -6,6 +6,11 @@ export const GET_SURVEYS = gql`
       id
       title
       order
+      Questions_aggregate {
+        aggregate {
+          count
+        }
+      }
     }
   }
 `;
