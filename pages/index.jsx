@@ -12,7 +12,7 @@ import { AddIcon } from "@chakra-ui/icons";
 
 const Home = () => {
   const { data } = useQuery(GET_SURVEYS);
-  const surveys = data?.allSurveys || [];
+  const surveys = data?.Survey || [];
 
   const [showCreate, toggleCreateForm] = useToggle();
 

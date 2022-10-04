@@ -2,8 +2,14 @@ import { useMutation } from "@apollo/client";
 import React from "react";
 import { CREATE_QUESTION } from "../mutations";
 
-import { useFormChange } from "hooks";
-import { GET_QUESTIONS } from "queries";
+import {
+  useFormChange,
+  useGetSurveyData,
+  useUpdateSurveyOrder,
+  useUpdateFolderOrder,
+  useGetFolderRow,
+} from "hooks";
+import { GET_SURVEY_DATA } from "queries";
 import { useRouter } from "next/router";
 import {
   Button,
@@ -74,6 +80,7 @@ export const QuestionForm = ({
   onSubmit,
   formValues,
   setFormValues,
+  loading,
 }) => {
   return (
     <VStack
@@ -84,7 +91,10 @@ export const QuestionForm = ({
       borderWidth="2px"
       borderRadius="10px"
       padding="1rem"
-      width={["300px", "400px", "600px", "900px"]}
+      maxWidth="100%"
+      alignSelf="start"
+      width={["300px", "400px", "600px", "1000px"]}
+      backgroundColor="white"
     >
       <Input
         fontSize="1.875rem"
@@ -140,7 +150,12 @@ export const QuestionForm = ({
       />
 
       <HStack justifyContent="space-between" width="100%">
-        <Button type="submit" size="sm">
+        <Button
+          type="submit"
+          size="sm"
+          isLoading={loading}
+          loadingText={edit ? "Updating" : "Creating"}
+        >
           {edit ? "Update" : "Create"}
         </Button>
         <Button onClick={onCancel} type="button" size="sm">
@@ -151,23 +166,39 @@ export const QuestionForm = ({
   );
 };
 
-const CreateQuestion = ({ closeForm, cancel }) => {
+const CreateQuestion = ({ folderId, cancel }) => {
   const {
     query: { surveyId },
   } = useRouter();
 
-  const [createSurvey] = useMutation(CREATE_QUESTION, {
-    onCompleted: (data) => {
-      const id = data?.createQuestion?.id;
-      closeForm(id);
-    },
-    update: (cache, { data: { createQuestion } }) =>
+  const { order: surveyOrder } = useGetSurveyData();
+  const [updateSurveyOrder] = useUpdateSurveyOrder();
+
+  const { order: folderOrder } = useGetFolderRow(folderId);
+  const [updateFolderOrder] = useUpdateFolderOrder();
+
+  const onCreateComplete = (data) => {
+    const id = data?.insert_Question_one?.id;
+    if (folderId) {
+      updateFolderOrder(folderId, [...folderOrder, id]);
+    } else {
+      updateSurveyOrder([...surveyOrder, id]);
+    }
+    cancel();
+  };
+
+  const [createQuestion, { loading }] = useMutation(CREATE_QUESTION, {
+    onCompleted: onCreateComplete,
+    update: (cache, { data: { insert_Question_one } }) =>
       cache.updateQuery(
-        { query: GET_QUESTIONS, variables: { surveyId } },
+        { query: GET_SURVEY_DATA, variables: { surveyId } },
         (data) => ({
-          Survey: {
-            ...data?.Survey,
-            Questions: [...(data?.Survey?.Questions || []), createQuestion],
+          Survey_by_pk: {
+            ...data?.Survey_by_pk,
+            Questions: [
+              ...(data?.Survey_by_pk?.Questions || []),
+              insert_Question_one,
+            ],
           },
         })
       ),
@@ -180,19 +211,20 @@ const CreateQuestion = ({ closeForm, cancel }) => {
     options: [],
   });
 
-  const createSurveyInForm = (e) => {
+  const createQuestionInForm = (e) => {
     e.preventDefault();
-    createSurvey({ variables: { ...createFormValues, surveyId } });
+    createQuestion({ variables: { ...createFormValues, surveyId, folderId } });
     return false;
   };
 
   return (
     <QuestionForm
-      onSubmit={createSurveyInForm}
+      onSubmit={createQuestionInForm}
       onCancel={cancel}
       onChange={onCreateFormChange}
       formValues={createFormValues}
       setFormValues={setFormValues}
+      loading={loading}
     />
   );
 };

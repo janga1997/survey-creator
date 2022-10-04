@@ -6,7 +6,14 @@ import { useFormChange } from "hooks";
 import { GET_SURVEYS } from "queries";
 import { Button, HStack, Input, VStack } from "@chakra-ui/react";
 
-export const SurveyForm = ({ formValues, onChange, onSubmit, onCancel }) => {
+export const SurveyForm = ({
+  formValues,
+  onChange,
+  onSubmit,
+  onCancel,
+  loading,
+  edit,
+}) => {
   return (
     <VStack
       as="form"
@@ -26,8 +33,13 @@ export const SurveyForm = ({ formValues, onChange, onSubmit, onCancel }) => {
       />
 
       <HStack justifyContent="space-between" width="100%">
-        <Button type="submit" size="sm">
-          Create
+        <Button
+          type="submit"
+          size="sm"
+          isLoading={loading}
+          loadingText={edit ? "Updating" : "Creating"}
+        >
+          {edit ? "Update" : "Create"}
         </Button>
         <Button onClick={onCancel} type="button" size="sm">
           Cancel
@@ -38,11 +50,11 @@ export const SurveyForm = ({ formValues, onChange, onSubmit, onCancel }) => {
 };
 
 const CreateSurvey = ({ closeForm }) => {
-  const [createSurvey] = useMutation(CREATE_SURVEY, {
+  const [createSurvey, { loading }] = useMutation(CREATE_SURVEY, {
     onCompleted: closeForm,
-    update: (cache, { data: { createSurvey } }) =>
+    update: (cache, { data: { insert_Survey_one } }) =>
       cache.updateQuery({ query: GET_SURVEYS }, (data) => ({
-        allSurveys: [...data?.allSurveys, createSurvey],
+        Survey: [...data?.Survey, insert_Survey_one],
       })),
   });
 
@@ -58,6 +70,7 @@ const CreateSurvey = ({ closeForm }) => {
 
   return (
     <SurveyForm
+      loading={loading}
       onSubmit={createSurveyInForm}
       onCancel={closeForm}
       formValues={createFormValues}

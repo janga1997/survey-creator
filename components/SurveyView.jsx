@@ -20,11 +20,9 @@ import { SurveyForm } from "./CreateSurvey";
 
 const SurveyRead = ({ id, title, toggle, order }) => {
   const [deleteSurvey] = useMutation(DELETE_SURVEY, {
-    update: (cache, { data: { removeSurvey } }) =>
+    update: (cache, { data: { delete_Survey_by_pk } }) =>
       cache.updateQuery({ query: GET_SURVEYS }, (data) => ({
-        allSurveys: data?.allSurveys.filter(
-          ({ id }) => id !== removeSurvey?.id
-        ),
+        Survey: data?.Survey.filter(({ id }) => id !== delete_Survey_by_pk?.id),
       })),
   });
 
@@ -66,7 +64,7 @@ const SurveyRead = ({ id, title, toggle, order }) => {
 };
 
 const SurveyEdit = ({ id, title, toggle }) => {
-  const [updateSurvey] = useMutation(UPDATE_SURVEY, {
+  const [updateSurvey, { loading }] = useMutation(UPDATE_SURVEY, {
     onCompleted: toggle,
   });
 
@@ -83,6 +81,8 @@ const SurveyEdit = ({ id, title, toggle }) => {
 
   return (
     <SurveyForm
+      edit
+      loading={loading}
       onSubmit={updateSurveyInForm}
       formValues={updateFormValues}
       onChange={onUpdateFormChange}

@@ -1,12 +1,19 @@
 import React from "react";
 
-import { GET_QUESTIONS } from "queries";
+import { GET_SURVEY_DATA } from "queries";
 import { DELETE_QUESTION, UPDATE_QUESTION } from "mutations";
 
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
 
-import { useToggle, useFormChange, useUpdateOrder } from "hooks";
+import {
+  useToggle,
+  useFormChange,
+  useUpdateSurveyOrder,
+  useGetSurveyData,
+  useUpdateFolderOrder,
+  useGetFolderRow,
+} from "hooks";
 import { QuestionForm } from "./CreateQuestion";
 import {
   Heading,
@@ -19,34 +26,49 @@ import {
 } from "@chakra-ui/react";
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 
-const QuestionRead = ({ id, text, toggle, required, answerType, options }) => {
+const QuestionRead = ({
+  id,
+  text,
+  toggle,
+  required,
+  answerType,
+  options,
+  folder_id,
+  provided,
+}) => {
   const {
     query: { surveyId },
   } = useRouter();
 
-  const { data } = useQuery(GET_QUESTIONS, {
-    skip: !Boolean(surveyId),
-    variables: { surveyId },
-  });
-  const order = data?.Survey?.order || [];
+  const { order: surveyOrder } = useGetSurveyData();
+  const [updateSurveyOrder] = useUpdateSurveyOrder();
 
-  const [updateOrder] = useUpdateOrder(surveyId);
+  const { order: folderOrder } = useGetFolderRow(folder_id);
+  const [updateFolderOrder] = useUpdateFolderOrder();
 
-  const [deleteQuestion] = useMutation(DELETE_QUESTION, {
+  const [deleteQuestion, { loading }] = useMutation(DELETE_QUESTION, {
     onCompleted: (deletedData) => {
-      const deletedId = deletedData?.removeQuestion?.id;
+      const deletedId = deletedData?.delete_Question_by_pk?.id;
+
+      const order = folder_id ? folderOrder : surveyOrder;
+
       const orderSet = new Set(order);
       orderSet.delete(deletedId);
-      updateOrder([...orderSet]);
+
+      if (folder_id) {
+        updateFolderOrder(folder_id, [...orderSet]);
+      } else {
+        updateSurveyOrder([...orderSet]);
+      }
     },
-    update: (cache, { data: { removeQuestion } }) =>
+    update: (cache, { data: { delete_Question_by_pk } }) =>
       cache.updateQuery(
-        { query: GET_QUESTIONS, variables: { surveyId } },
+        { query: GET_SURVEY_DATA, variables: { surveyId } },
         (questionData) => ({
-          Survey: {
-            ...questionData?.Survey,
-            Questions: questionData?.Survey?.Questions.filter(
-              ({ id: removedId }) => removedId !== removeQuestion?.id
+          Survey_by_pk: {
+            ...questionData?.Survey_by_pk,
+            Questions: questionData?.Survey_by_pk?.Questions.filter(
+              ({ id: removedId }) => removedId !== delete_Question_by_pk?.id
             ),
           },
         })
@@ -63,11 +85,15 @@ const QuestionRead = ({ id, text, toggle, required, answerType, options }) => {
       borderWidth="4px"
       borderRadius="10px"
       padding={"1rem"}
-      width={["300px", "400px", "600px", "900px"]}
+      maxWidth="100%"
+      width={["300px", "400px", "600px", "1000px"]}
       justifyContent="space-between"
       alignItems="stretch"
+      backgroundColor="white"
+      ref={provided.innerRef}
+      {...provided.draggableProps}
     >
-      <Heading as="h2" size="lg">
+      <Heading as="h2" size="lg" {...provided.dragHandleProps}>
         {text}
       </Heading>
       <HStack justifyContent="space-between">
@@ -86,6 +112,7 @@ const QuestionRead = ({ id, text, toggle, required, answerType, options }) => {
         />
         <IconButton
           colorScheme="red"
+          isLoading={loading}
           aria-label={`Delete question`}
           icon={<DeleteIcon />}
           onClick={deleteFromButton}
@@ -94,7 +121,7 @@ const QuestionRead = ({ id, text, toggle, required, answerType, options }) => {
       {answerType.includes("SELECT") && (
         <VStack borderWidth="2px" padding="1rem" alignItems="start">
           <Heading size="md">Options</Heading>
-          <UnorderedList label="Options">
+          <UnorderedList label="Options" paddingLeft="2rem">
             {options.map((value) => (
               <ListItem key={value} fontSize="2xl">
                 {value}
@@ -120,7 +147,7 @@ const QuestionEdit = ({
     query: { surveyId },
   } = useRouter();
 
-  const [updateQuestion] = useMutation(UPDATE_QUESTION, {
+  const [updateQuestion, { loading }] = useMutation(UPDATE_QUESTION, {
     onCompleted: toggle,
   });
 
@@ -145,6 +172,7 @@ const QuestionEdit = ({
       onCancel={toggle}
       formValues={updateFormValues}
       setFormValues={setFormValues}
+      loading={loading}
     />
   );
 };

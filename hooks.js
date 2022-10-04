@@ -1,6 +1,8 @@
-import { useMutation } from "@apollo/client";
-import { UPDATE_ORDER } from "mutations";
-import { GET_QUESTIONS } from "queries";
+import { useMutation, useQuery } from "@apollo/client";
+import { groupBy } from "lodash-es";
+import { UPDATE_FOLDER_ORDER, UPDATE_SURVEY_ORDER } from "mutations";
+import { useRouter } from "next/router";
+import { GET_SURVEY_DATA } from "queries";
 import { useState } from "react";
 
 export const useFormChange = (initialState) => {
@@ -31,10 +33,71 @@ export const useToggle = (initialValue = false) => {
   return [boolValue, toggleValue];
 };
 
-export const useUpdateOrder = (id) => {
-  const [updateSurvey] = useMutation(UPDATE_ORDER, {});
+export const useUpdateSurveyOrder = () => {
+  const {
+    query: { surveyId },
+  } = useRouter();
 
-  const updateOrder = (order) => updateSurvey({ variables: { id, order } });
+  const [updateSurvey, output] = useMutation(UPDATE_SURVEY_ORDER);
 
-  return [updateOrder];
+  const updateOrder = (order) =>
+    updateSurvey({ variables: { id: surveyId, order } });
+
+  return [updateOrder, output];
+};
+
+export const useUpdateFolderOrder = () => {
+  const [updateFolder, output] = useMutation(UPDATE_FOLDER_ORDER);
+
+  const updateOrder = (folderId, order) =>
+    updateFolder({ variables: { folderId, order } });
+
+  return [updateOrder, output];
+};
+
+export const useGetSurveyData = () => {
+  const {
+    query: { surveyId },
+  } = useRouter();
+
+  const { data, loading, error } = useQuery(GET_SURVEY_DATA, {
+    skip: !Boolean(surveyId),
+    variables: { surveyId },
+  });
+
+  const order = data?.Survey_by_pk?.order || [];
+  const title = data?.Survey_by_pk?.title;
+  const questions = data?.Survey_by_pk?.Questions || [];
+  const folders = data?.Survey_by_pk?.Folders || [];
+
+  return { order, questions, folders, loading, error, title };
+};
+
+export const useGetSurveyRow = () => {
+  const { order, questions, folders, ...rest } = useGetSurveyData();
+
+  const itemsById = groupBy([...questions, ...folders], "id");
+  const itemsInOrder = order.map((id) => itemsById[id]?.[0]).filter(Boolean);
+
+  return { row: itemsInOrder, ...rest };
+};
+
+export const useGetFolderRow = (folderId) => {
+  const { questions, folders, loading, error } = useGetSurveyData();
+
+  const currentFolder = folders.find(({ id }) => id === folderId);
+  const order = currentFolder?.order || [];
+
+  const itemsById = groupBy([...questions, ...folders], "id");
+  const itemsInOrder = order.map((id) => itemsById[id]?.[0]).filter(Boolean);
+
+  return { row: itemsInOrder, loading, error, ...currentFolder };
+};
+
+export const reorder = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
 };

@@ -2,10 +2,10 @@ import { gql } from "@apollo/client";
 
 export const CREATE_SURVEY = gql`
   mutation CreateSurvey($title: String!) {
-    createSurvey(title: $title) {
+    insert_Survey_one(object: { title: $title, order: [] }) {
       id
-      title
       order
+      title
     }
   }
 `;
@@ -13,39 +13,44 @@ export const CREATE_SURVEY = gql`
 export const CREATE_QUESTION = gql`
   mutation CreateQuestion(
     $text: String!
-    $surveyId: ID!
+    $surveyId: uuid!
+    $folderId: uuid
     $required: Boolean!
     $answerType: String!
-    $options: [String!]!
+    $options: jsonb
   ) {
-    createQuestion(
-      text: $text
-      survey_id: $surveyId
-      required: $required
-      answerType: $answerType
-      options: $options
+    insert_Question_one(
+      object: {
+        text: $text
+        survey_id: $surveyId
+        folder_id: $folderId
+        required: $required
+        answerType: $answerType
+        options: $options
+      }
     ) {
       id
-      text
-      survey_id
-      required
       answerType
+      folder_id
       options
+      required
+      survey_id
+      text
     }
   }
 `;
 
 export const DELETE_SURVEY = gql`
-  mutation DeleteSurvey($id: ID!) {
-    removeSurvey(id: $id) {
+  mutation DeleteSurvey($id: uuid!) {
+    delete_Survey_by_pk(id: $id) {
       id
     }
   }
 `;
 
 export const UPDATE_SURVEY = gql`
-  mutation UpdateSurvey($id: ID!, $title: String!) {
-    updateSurvey(id: $id, title: $title) {
+  mutation UpdateSurvey($id: uuid!, $title: String!) {
+    update_Survey_by_pk(pk_columns: { id: $id }, _set: { title: $title }) {
       id
       title
       order
@@ -53,18 +58,19 @@ export const UPDATE_SURVEY = gql`
   }
 `;
 
-export const UPDATE_ORDER = gql`
-  mutation UpdateOrder($id: ID!, $order: [String!]!) {
-    updateSurvey(id: $id, order: $order) {
+export const UPDATE_SURVEY_ORDER = gql`
+  mutation UpdateSurveyOrder($id: uuid!, $order: jsonb!) {
+    update_Survey_by_pk(pk_columns: { id: $id }, _set: { order: $order }) {
       id
+      title
       order
     }
   }
 `;
 
 export const DELETE_QUESTION = gql`
-  mutation DeleteQuestion($id: ID!) {
-    removeQuestion(id: $id) {
+  mutation DeleteQuestion($id: uuid!) {
+    delete_Question_by_pk(id: $id) {
       id
     }
   }
@@ -72,26 +78,56 @@ export const DELETE_QUESTION = gql`
 
 export const UPDATE_QUESTION = gql`
   mutation UpdateQuestion(
-    $id: ID!
+    $id: uuid!
     $text: String!
-    $surveyId: ID!
+    $surveyId: uuid!
     $required: Boolean!
     $answerType: String!
-    $options: [String!]!
+    $options: jsonb!
   ) {
-    updateQuestion(
-      id: $id
-      text: $text
-      survey_id: $surveyId
-      required: $required
-      answerType: $answerType
-      options: $options
+    update_Question_by_pk(
+      pk_columns: { id: $id }
+      _set: {
+        text: $text
+        survey_id: $surveyId
+        required: $required
+        answerType: $answerType
+        options: $options
+      }
     ) {
       id
       text
       required
       answerType
       options
+    }
+  }
+`;
+
+export const CREATE_FOLDER = gql`
+  mutation CreateFolder($name: String!, $surveyId: uuid!, $folderId: uuid) {
+    insert_Folder_one(
+      object: { folder_id: $folderId, name: $name, survey_id: $surveyId }
+    ) {
+      id
+      folder_id
+      name
+      order
+      survey_id
+    }
+  }
+`;
+
+export const UPDATE_FOLDER_ORDER = gql`
+  mutation UpdateFolderOrder($folderId: uuid!, $order: jsonb!) {
+    update_Folder_by_pk(
+      pk_columns: { id: $folderId }
+      _set: { order: $order }
+    ) {
+      id
+      name
+      order
+      folder_id
     }
   }
 `;
