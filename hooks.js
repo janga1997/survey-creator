@@ -11,6 +11,8 @@ import { useRouter } from "next/router";
 import { GET_SURVEY_DATA } from "queries";
 import { useState } from "react";
 
+import useSurveyStore from "store";
+
 export const useFormChange = (initialState) => {
   const [formState, setFormState] = useState(initialState);
 
@@ -36,7 +38,7 @@ export const useToggle = (initialValue = false) => {
 
   const toggleValue = () => setBool(!boolValue);
 
-  return [boolValue, toggleValue];
+  return [boolValue, toggleValue, setBool];
 };
 
 export const useUpdateSurveyOrder = () => {
@@ -71,9 +73,14 @@ export const useGetSurveyData = () => {
     variables: { surveyId },
   });
 
+  const searchText = useSurveyStore((state) => state.searchText);
+
   const order = data?.Survey_by_pk?.order || [];
   const title = data?.Survey_by_pk?.title;
-  const questions = data?.Survey_by_pk?.Questions || [];
+  const questions =
+    data?.Survey_by_pk?.Questions?.filter(({ text }) =>
+      text?.includes(searchText)
+    ) || [];
   const folders = data?.Survey_by_pk?.Folders || [];
 
   return { order, questions, folders, loading, error, title };

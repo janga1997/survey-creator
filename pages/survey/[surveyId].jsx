@@ -9,10 +9,11 @@ import { useUpdateSurveyOrder, useGetSurveyRow, reorder } from "hooks";
 
 import NextLink from "next/link";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { VStack, Link, HStack } from "@chakra-ui/react";
+import { VStack, Link, HStack, Input } from "@chakra-ui/react";
 import FolderView from "../../components/FolderView";
 import AddQuestionOrFolder from "../../components/AddQuestionOrFolder";
 import CreateFolder from "../../components/CreateFolder";
+import useSurveyStore from "../../store";
 
 const SurveyPage = () => {
   const { row, title } = useGetSurveyRow();
@@ -30,6 +31,9 @@ const SurveyPage = () => {
     const items = reorder(row, result.source.index, result.destination.index);
     updateOrder(items.map(({ id }) => id));
   };
+
+  const searchText = useSurveyStore((state) => state.searchText);
+  const setSearchText = useSurveyStore((state) => state.setSearchText);
 
   return (
     <VStack
@@ -55,6 +59,15 @@ const SurveyPage = () => {
             Home
           </Link>
         </NextLink>
+
+        <Input
+          onChange={setSearchText}
+          value={searchText}
+          type="text"
+          placeholder="Search for questions"
+          width="auto"
+          flexGrow={1}
+        />
 
         <AddQuestionOrFolder
           onQuestionClick={toggleQuestionCreateForm}

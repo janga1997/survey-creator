@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Accordion,
   AccordionItem,
@@ -25,6 +25,7 @@ import CreateFolder from "./CreateFolder";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import MoveNode from "./MoveNode";
+import useSurveyStore from "../store";
 
 const FolderView = ({ id, name, provided, folder_id }) => {
   const [showQuestionCreate, toggleQuestionCreateForm] = useToggle();
@@ -46,13 +47,15 @@ const FolderView = ({ id, name, provided, folder_id }) => {
     );
   };
 
-  const [openFolder, setFolderIndex] = useState(1);
-  const toggleFolder = () => setFolderIndex(openFolder === 1 ? 0 : 1);
-  const expandFolder = () => setFolderIndex(0);
+  const [openFolder, toggleFolder, setOpenFolder] = useToggle();
+  const expandFolder = () => setOpenFolder(true);
 
+  const searchText = useSurveyStore((state) => state.searchText);
+
+  const expanded = searchText.length ? row.length : openFolder;
   return (
     <Accordion
-      index={openFolder}
+      index={Number(!expanded)}
       maxWidth="100%"
       width={["300px", "400px", "600px", "1000px"]}
       border="4px"
