@@ -139,3 +139,100 @@ export const DELETE_FOLDER = gql`
     }
   }
 `;
+
+export const MOVE_BETWEEN_FOLDERS = gql`
+  mutation MoveBetweenFolders(
+    $questionIds: [uuid!]
+    $folderIds: [uuid!]
+    $currentFolderId: uuid!
+    $currentFolderOrder: jsonb!
+    $newFolderId: uuid!
+    $newFolderOrder: jsonb!
+  ) {
+    update_Question_many(
+      updates: {
+        where: { id: { _in: $questionIds } }
+        _set: { folder_id: $newFolderId }
+      }
+    ) {
+      returning {
+        id
+        folder_id
+      }
+    }
+    update_Folder_many(
+      updates: {
+        where: { id: { _in: $folderIds } }
+        _set: { folder_id: $newFolderId }
+      }
+    ) {
+      returning {
+        id
+        folder_id
+      }
+    }
+    current: update_Folder_by_pk(
+      pk_columns: { id: $currentFolderId }
+      _set: { order: $currentFolderOrder }
+    ) {
+      id
+      order
+    }
+    new: update_Folder_by_pk(
+      pk_columns: { id: $newFolderId }
+      _set: { order: $newFolderOrder }
+    ) {
+      id
+      order
+    }
+  }
+`;
+
+export const MOVE_BETWEEN_FOLDERS_SURVEYS = gql`
+  mutation MoveBetweenFoldersSurveys(
+    $questionIds: [uuid!]
+    $folderIds: [uuid!]
+    $surveyId: uuid!
+    $surveyOrder: jsonb!
+    $newFolderId: uuid
+    $parentFolderId: uuid!
+    $parentFolderOrder: jsonb!
+  ) {
+    update_Question_many(
+      updates: {
+        where: { id: { _in: $questionIds } }
+        _set: { folder_id: $newFolderId }
+      }
+    ) {
+      returning {
+        id
+        folder_id
+      }
+    }
+    update_Folder_many(
+      updates: {
+        where: { id: { _in: $folderIds } }
+        _set: { folder_id: $newFolderId }
+      }
+    ) {
+      returning {
+        id
+        folder_id
+      }
+    }
+    update_Folder_by_pk(
+      pk_columns: { id: $parentFolderId }
+      _set: { order: $parentFolderOrder }
+    ) {
+      id
+      order
+    }
+    update_Survey_by_pk(
+      pk_columns: { id: $surveyId }
+      _set: { order: $surveyOrder }
+    ) {
+      id
+      order
+    }
+  }
+`;

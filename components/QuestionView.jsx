@@ -6,14 +6,7 @@ import { DELETE_QUESTION, UPDATE_QUESTION } from "mutations";
 import { useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
 
-import {
-  useToggle,
-  useFormChange,
-  useUpdateSurveyOrder,
-  useGetSurveyData,
-  useUpdateFolderOrder,
-  useGetFolderRow,
-} from "hooks";
+import { useToggle, useFormChange, useUpdateParentOrder } from "hooks";
 import { QuestionForm } from "./CreateQuestion";
 import {
   Heading,
@@ -25,6 +18,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import MoveNode from "./MoveNode";
 
 const QuestionRead = ({
   id,
@@ -40,26 +34,12 @@ const QuestionRead = ({
     query: { surveyId },
   } = useRouter();
 
-  const { order: surveyOrder } = useGetSurveyData();
-  const [updateSurveyOrder] = useUpdateSurveyOrder();
-
-  const { order: folderOrder } = useGetFolderRow(folder_id);
-  const [updateFolderOrder] = useUpdateFolderOrder();
+  const { deleteFromOrder } = useUpdateParentOrder(folder_id);
 
   const [deleteQuestion, { loading }] = useMutation(DELETE_QUESTION, {
     onCompleted: (deletedData) => {
       const deletedId = deletedData?.delete_Question_by_pk?.id;
-
-      const order = folder_id ? folderOrder : surveyOrder;
-
-      const orderSet = new Set(order);
-      orderSet.delete(deletedId);
-
-      if (folder_id) {
-        updateFolderOrder(folder_id, [...orderSet]);
-      } else {
-        updateSurveyOrder([...orderSet]);
-      }
+      deleteFromOrder(deletedId);
     },
     update: (cache, { data: { delete_Question_by_pk } }) =>
       cache.updateQuery(
@@ -93,9 +73,12 @@ const QuestionRead = ({
       ref={provided.innerRef}
       {...provided.draggableProps}
     >
-      <Heading as="h2" size="lg" {...provided.dragHandleProps}>
-        {text}
-      </Heading>
+      <HStack justifyContent="space-between">
+        <Heading as="h2" size="lg" {...provided.dragHandleProps}>
+          {text}
+        </Heading>
+        <MoveNode type="question" id={id} folder_id={folder_id} />
+      </HStack>
       <HStack justifyContent="space-between">
         <Heading as="span" size="md">{`Type: ${answerType}`}</Heading>
         <label>

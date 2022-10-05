@@ -2,6 +2,8 @@ import { useMutation, useQuery } from "@apollo/client";
 import { groupBy } from "lodash-es";
 import {
   DELETE_FOLDER,
+  MOVE_BETWEEN_FOLDERS,
+  MOVE_BETWEEN_FOLDERS_SURVEYS,
   UPDATE_FOLDER_ORDER,
   UPDATE_SURVEY_ORDER,
 } from "mutations";
@@ -95,7 +97,38 @@ export const useGetFolderRow = (folderId) => {
   const itemsById = groupBy([...questions, ...folders], "id");
   const itemsInOrder = order.map((id) => itemsById[id]?.[0]).filter(Boolean);
 
-  return { row: itemsInOrder, loading, error, ...currentFolder };
+  return { row: itemsInOrder, loading, error, ...currentFolder, order };
+};
+
+export const useUpdateParentOrder = (folderId) => {
+  const { order: surveyOrder } = useGetSurveyData();
+  const [updateSurveyOrder] = useUpdateSurveyOrder();
+
+  const { order: folderOrder } = useGetFolderRow(folderId);
+  const [updateFolderOrder] = useUpdateFolderOrder();
+
+  const addToOrder = (createdId) => {
+    if (folderId) {
+      updateFolderOrder(folderId, [...folderOrder, createdId]);
+    } else {
+      updateSurveyOrder([...surveyOrder, createdId]);
+    }
+  };
+
+  const deleteFromOrder = (deletedId) => {
+    const order = folderId ? folderOrder : surveyOrder;
+
+    const orderSet = new Set(order);
+    orderSet.delete(deletedId);
+
+    if (folderId) {
+      updateFolderOrder(folderId, [...orderSet]);
+    } else {
+      updateSurveyOrder([...orderSet]);
+    }
+  };
+
+  return { addToOrder, deleteFromOrder };
 };
 
 export const reorder = (list, startIndex, endIndex) => {
@@ -111,25 +144,12 @@ export const useDeleteFolder = (folderId, parentFolderId) => {
     query: { surveyId },
   } = useRouter();
 
-  const { order: surveyOrder } = useGetSurveyData();
-  const [updateSurveyOrder] = useUpdateSurveyOrder();
-
-  const { order: folderOrder } = useGetFolderRow(parentFolderId);
-  const [updateFolderOrder] = useUpdateFolderOrder();
+  const { deleteFromOrder } = useUpdateParentOrder(parentFolderId);
 
   const [deleteFoldersAndQuestions, output] = useMutation(DELETE_FOLDER, {
     onCompleted: () => {
       const deletedId = folderId;
-      const order = parentFolderId ? folderOrder : surveyOrder;
-
-      const orderSet = new Set(order);
-      orderSet.delete(deletedId);
-
-      if (parentFolderId) {
-        updateFolderOrder(parentFolderId, [...orderSet]);
-      } else {
-        updateSurveyOrder([...orderSet]);
-      }
+      deleteFromOrder(deletedId);
     },
     refetchQueries: [{ query: GET_SURVEY_DATA, variables: { surveyId } }],
   });
@@ -138,4 +158,66 @@ export const useDeleteFolder = (folderId, parentFolderId) => {
   };
 
   return [deleteFolder, output];
+};
+
+export const useMoveNode = (type, id, currentFolderId, newFolderId) => {
+  const [moveBetweenFolders, { loading: loadingOne }] =
+    useMutation(MOVE_BETWEEN_FOLDERS);
+  const [moveBetweenFoldersSurveys, { loading: loadingTwo }] = useMutation(
+    MOVE_BETWEEN_FOLDERS_SURVEYS
+  );
+
+  const { order: currentFolderOrder } = useGetFolderRow(currentFolderId);
+  const { order: newFolderOrder } = useGetFolderRow(newFolderId);
+
+  const {
+    query: { surveyId },
+  } = useRouter();
+  const { order: surveyOrder } = useGetSurveyData();
+
+  const move = () => {
+    if (currentFolderId && newFolderId) {
+      const variables = {
+        [`${type}Ids`]: [id],
+        currentFolderId,
+        newFolderId,
+        currentFolderOrder: currentFolderOrder.filter((x) => x !== id),
+        newFolderOrder: [...newFolderOrder, id],
+      };
+      moveBetweenFolders({
+        variables: { questionIds: [], folderIds: [], ...variables },
+      });
+    } else if (!currentFolderId && newFolderId) {
+      const variables = {
+        [`${type}Ids`]: [id],
+        newFolderId,
+        parentFolderId: newFolderId,
+        parentFolderOrder: [...newFolderOrder, id],
+        surveyId,
+        surveyOrder: surveyOrder.filter((x) => x !== id),
+      };
+
+      console.log(variables);
+
+      moveBetweenFoldersSurveys({
+        variables: { questionIds: [], folderIds: [], ...variables },
+      });
+    } else {
+      const variables = {
+        [`${type}Ids`]: [id],
+        newFolderId: null,
+        parentFolderId: currentFolderId,
+        parentFolderOrder: currentFolderOrder.filter((x) => x !== id),
+        surveyId,
+        surveyOrder: [...surveyOrder, id],
+      };
+
+      console.log(variables);
+      moveBetweenFoldersSurveys({
+        variables: { questionIds: [], folderIds: [], ...variables },
+      });
+    }
+  };
+
+  return [move, { loading: loadingOne || loadingTwo }];
 };

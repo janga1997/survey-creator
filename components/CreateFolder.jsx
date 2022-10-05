@@ -4,13 +4,7 @@ import { HStack } from "@chakra-ui/layout";
 import { Button } from "@chakra-ui/react";
 import { React } from "react";
 
-import {
-  useFormChange,
-  useGetSurveyData,
-  useUpdateSurveyOrder,
-  useUpdateFolderOrder,
-  useGetFolderRow,
-} from "hooks";
+import { useFormChange, useUpdateParentOrder } from "hooks";
 import { useRouter } from "next/router";
 import { CREATE_FOLDER } from "../mutations";
 import { GET_SURVEY_DATA } from "queries";
@@ -20,19 +14,12 @@ const CreateFolder = ({ folderId, cancel }) => {
     query: { surveyId },
   } = useRouter();
 
-  const { order: surveyOrder } = useGetSurveyData();
-  const [updateSurveyOrder] = useUpdateSurveyOrder();
-
-  const { order: folderOrder } = useGetFolderRow(folderId);
-  const [updateFolderOrder] = useUpdateFolderOrder();
+  const { addToOrder } = useUpdateParentOrder(folderId);
 
   const onCreateComplete = (data) => {
     const id = data?.insert_Folder_one?.id;
-    if (folderId) {
-      updateFolderOrder(folderId, [...folderOrder, id]);
-    } else {
-      updateSurveyOrder([...surveyOrder, id]);
-    }
+    addToOrder(id);
+
     cancel();
   };
   const [createFolder, { loading }] = useMutation(CREATE_FOLDER, {

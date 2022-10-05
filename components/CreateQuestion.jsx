@@ -2,13 +2,7 @@ import { useMutation } from "@apollo/client";
 import React from "react";
 import { CREATE_QUESTION } from "../mutations";
 
-import {
-  useFormChange,
-  useGetSurveyData,
-  useUpdateSurveyOrder,
-  useUpdateFolderOrder,
-  useGetFolderRow,
-} from "hooks";
+import { useFormChange, useUpdateParentOrder } from "hooks";
 import { GET_SURVEY_DATA } from "queries";
 import { useRouter } from "next/router";
 import {
@@ -171,19 +165,12 @@ const CreateQuestion = ({ folderId, cancel }) => {
     query: { surveyId },
   } = useRouter();
 
-  const { order: surveyOrder } = useGetSurveyData();
-  const [updateSurveyOrder] = useUpdateSurveyOrder();
-
-  const { order: folderOrder } = useGetFolderRow(folderId);
-  const [updateFolderOrder] = useUpdateFolderOrder();
+  const { addToOrder } = useUpdateParentOrder(folderId);
 
   const onCreateComplete = (data) => {
     const id = data?.insert_Question_one?.id;
-    if (folderId) {
-      updateFolderOrder(folderId, [...folderOrder, id]);
-    } else {
-      updateSurveyOrder([...surveyOrder, id]);
-    }
+    addToOrder(id);
+
     cancel();
   };
 

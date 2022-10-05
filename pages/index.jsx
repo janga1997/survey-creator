@@ -1,13 +1,11 @@
 import { useQuery } from "@apollo/client";
-import Head from "next/head";
-import styles from "../styles/Home.module.css";
 
 import SurveyView from "../components/SurveyView";
 
 import { GET_SURVEYS } from "../queries";
 import { useToggle } from "hooks";
 import CreateSurvey from "../components/CreateSurvey";
-import { Button, Divider, Heading, HStack, VStack } from "@chakra-ui/react";
+import { Button, Heading, HStack, VStack } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
 const Home = () => {

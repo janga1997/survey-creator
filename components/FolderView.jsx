@@ -24,6 +24,7 @@ import CreateQuestion from "./CreateQuestion";
 import CreateFolder from "./CreateFolder";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import MoveNode from "./MoveNode";
 
 const FolderView = ({ id, name, provided, folder_id }) => {
   const [showQuestionCreate, toggleQuestionCreateForm] = useToggle();
@@ -32,7 +33,7 @@ const FolderView = ({ id, name, provided, folder_id }) => {
 
   const [updateOrder] = useUpdateFolderOrder();
 
-  const [deleteFolder] = useDeleteFolder(id, folder_id);
+  const [deleteFolder, { loading }] = useDeleteFolder(id, folder_id);
 
   const onDragEnd = (result) => {
     if (!result.destination) {
@@ -70,11 +71,12 @@ const FolderView = ({ id, name, provided, folder_id }) => {
             />
             <IconButton
               colorScheme="red"
-              // isLoading={loading}
+              isLoading={loading}
               aria-label={`Delete folder`}
               icon={<DeleteIcon />}
               onClick={deleteFolder}
             />
+            <MoveNode type="folder" folder_id={folder_id} id={id} />
           </HStack>
         </HStack>
         <AccordionPanel>
