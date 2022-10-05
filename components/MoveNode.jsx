@@ -46,7 +46,9 @@ const MoveNode = ({ type, id, folder_id }) => {
             {folders
               .filter(({ id: newId }) => newId !== folder_id && newId !== id)
               .map(({ id: newId, name }) => (
-                <option value={newId}>{name}</option>
+                <option value={newId} key={newId}>
+                  {name}
+                </option>
               ))}
           </Select>
           <IconButton
