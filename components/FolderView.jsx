@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Accordion,
   AccordionItem,
@@ -46,9 +46,13 @@ const FolderView = ({ id, name, provided, folder_id }) => {
     );
   };
 
+  const [openFolder, setFolderIndex] = useState(1);
+  const toggleFolder = () => setFolderIndex(openFolder === 1 ? 0 : 1);
+  const expandFolder = () => setFolderIndex(0);
+
   return (
     <Accordion
-      allowToggle
+      index={openFolder}
       maxWidth="100%"
       width={["300px", "400px", "600px", "1000px"]}
       border="4px"
@@ -62,10 +66,11 @@ const FolderView = ({ id, name, provided, folder_id }) => {
         <HStack justifyContent="space-between">
           <Heading {...provided.dragHandleProps}>{name}</Heading>
           <HStack>
-            <AccordionButton width="fit-content">
+            <AccordionButton width="fit-content" onClick={toggleFolder}>
               <AccordionIcon />
             </AccordionButton>
             <AddQuestionOrFolder
+              expandFolder={expandFolder}
               onQuestionClick={toggleQuestionCreateForm}
               onFolderClick={toggleFolderCreateForm}
             />
