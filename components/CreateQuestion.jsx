@@ -80,7 +80,7 @@ export const QuestionForm = ({
     <VStack
       as="form"
       onSubmit={onSubmit}
-      gap="20px"
+      gap="0.5rem"
       alignItems="start"
       borderWidth="2px"
       borderRadius="10px"
@@ -92,7 +92,7 @@ export const QuestionForm = ({
     >
       <Input
         fontSize="1.875rem"
-        fontWeight="bolder"
+        fontWeight="normal"
         paddingLeft="0"
         value={formValues.text}
         name="text"
@@ -106,8 +106,8 @@ export const QuestionForm = ({
           style={{
             display: "flex",
             alignItems: "center",
-            fontSize: "1.25rem",
-            fontWeight: "bold",
+            fontSize: "0.875rem",
+            fontWeight: "normal",
           }}
         >
           Type:
@@ -115,8 +115,7 @@ export const QuestionForm = ({
             value={formValues.answerType}
             onChange={onChange}
             name="answerType"
-            fontWeight="bold"
-            fontSize="1.25rem"
+            size="xs"
           >
             <option value="TEXT">Text</option>
             <option value="BOOLEAN">Boolean</option>
