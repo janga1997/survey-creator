@@ -7,6 +7,7 @@ import { useToggle } from "hooks";
 import CreateSurvey from "../components/CreateSurvey";
 import { Button, Heading, HStack, VStack } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
+import Head from "next/head";
 
 const Home = () => {
   const { data } = useQuery(GET_SURVEYS, { fetchPolicy: "cache-and-network" });
@@ -21,6 +22,9 @@ const Home = () => {
       alignItems="center"
       alignContent="center"
     >
+      <Head>
+        <title>Create Surveys!</title>
+      </Head>
       <HStack
         justifyContent="space-between"
         width="100%"
