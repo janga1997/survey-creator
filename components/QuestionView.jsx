@@ -17,7 +17,7 @@ import {
   UnorderedList,
   VStack,
 } from "@chakra-ui/react";
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { DeleteIcon, DragHandleIcon, EditIcon } from "@chakra-ui/icons";
 import MoveNode from "./MoveNode";
 
 const QuestionRead = ({
@@ -61,8 +61,8 @@ const QuestionRead = ({
 
   return (
     <VStack
-      gap="20px"
-      borderWidth="4px"
+      gap="0.5rem"
+      borderWidth="2px"
       borderRadius="10px"
       padding={"1rem"}
       maxWidth="100%"
@@ -74,13 +74,22 @@ const QuestionRead = ({
       {...provided.draggableProps}
     >
       <HStack justifyContent="space-between">
-        <Heading as="h2" size="lg" {...provided.dragHandleProps}>
-          {text}
-        </Heading>
+        <HStack>
+          <div {...provided.dragHandleProps}>
+            <DragHandleIcon />
+          </div>
+          <Heading as="h2" size="lg" fontWeight="normal" fontSize="3xl">
+            {text}
+          </Heading>
+        </HStack>
         <MoveNode type="question" id={id} folder_id={folder_id} />
       </HStack>
       <HStack justifyContent="space-between">
-        <Heading as="span" size="md">{`Type: ${answerType}`}</Heading>
+        <Heading
+          as="span"
+          size="xs"
+          fontWeight="light"
+        >{`Type: ${answerType}`}</Heading>
         <label>
           Required:
           <Switch isChecked={Boolean(required)} isReadOnly size="lg" />

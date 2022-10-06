@@ -4,6 +4,7 @@ import {
   DELETE_FOLDER,
   MOVE_BETWEEN_FOLDERS,
   MOVE_BETWEEN_FOLDERS_SURVEYS,
+  UPDATE_FOLDER_NAME,
   UPDATE_FOLDER_ORDER,
   UPDATE_SURVEY_ORDER,
 } from "mutations";
@@ -49,7 +50,16 @@ export const useUpdateSurveyOrder = () => {
   const [updateSurvey, output] = useMutation(UPDATE_SURVEY_ORDER);
 
   const updateOrder = (order) =>
-    updateSurvey({ variables: { id: surveyId, order } });
+    updateSurvey({
+      variables: { id: surveyId, order },
+      optimisticResponse: {
+        update_Survey_by_pk: {
+          id: surveyId,
+          order,
+          __typename: "Survey",
+        },
+      },
+    });
 
   return [updateOrder, output];
 };
@@ -58,7 +68,16 @@ export const useUpdateFolderOrder = () => {
   const [updateFolder, output] = useMutation(UPDATE_FOLDER_ORDER);
 
   const updateOrder = (folderId, order) =>
-    updateFolder({ variables: { folderId, order } });
+    updateFolder({
+      variables: { folderId, order },
+      optimisticResponse: {
+        update_Folder_by_pk: {
+          id: folderId,
+          order,
+          __typename: "Folder",
+        },
+      },
+    });
 
   return [updateOrder, output];
 };
@@ -227,4 +246,14 @@ export const useMoveNode = (type, id, currentFolderId, newFolderId) => {
   };
 
   return [move, { loading: loadingOne || loadingTwo }];
+};
+
+export const useUpdateFolderName = (folderId) => {
+  const [updateName, output] = useMutation(UPDATE_FOLDER_NAME);
+
+  const updateFolderName = (name) => {
+    updateName({ variables: { id: folderId, name } });
+  };
+
+  return [updateFolderName, output];
 };

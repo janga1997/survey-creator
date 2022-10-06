@@ -53,7 +53,6 @@ export const UPDATE_SURVEY = gql`
     update_Survey_by_pk(pk_columns: { id: $id }, _set: { title: $title }) {
       id
       title
-      order
     }
   }
 `;
@@ -62,7 +61,6 @@ export const UPDATE_SURVEY_ORDER = gql`
   mutation UpdateSurveyOrder($id: uuid!, $order: jsonb!) {
     update_Survey_by_pk(pk_columns: { id: $id }, _set: { order: $order }) {
       id
-      title
       order
     }
   }
@@ -125,9 +123,16 @@ export const UPDATE_FOLDER_ORDER = gql`
       _set: { order: $order }
     ) {
       id
-      name
       order
-      folder_id
+    }
+  }
+`;
+
+export const UPDATE_FOLDER_NAME = gql`
+  mutation UpdateFolderName($id: uuid!, $name: String!) {
+    update_Folder_by_pk(pk_columns: { id: $id }, _set: { name: $name }) {
+      id
+      name
     }
   }
 `;

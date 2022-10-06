@@ -9,6 +9,9 @@ import {
   HStack,
   VStack,
   IconButton,
+  Editable,
+  EditableInput,
+  EditablePreview,
 } from "@chakra-ui/react";
 import QuestionView from "components/QuestionView";
 
@@ -18,11 +21,12 @@ import {
   useUpdateFolderOrder,
   reorder,
   useDeleteFolder,
+  useUpdateFolderName,
 } from "hooks";
 import AddQuestionOrFolder from "./AddQuestionOrFolder";
 import CreateQuestion from "./CreateQuestion";
 import CreateFolder from "./CreateFolder";
-import { DeleteIcon } from "@chakra-ui/icons";
+import { DeleteIcon, DragHandleIcon } from "@chakra-ui/icons";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import MoveNode from "./MoveNode";
 import useSurveyStore from "../store";
@@ -53,21 +57,43 @@ const FolderView = ({ id, name, provided, folder_id }) => {
   const searchText = useSurveyStore((state) => state.searchText);
 
   const expanded = searchText.length ? row.length : openFolder;
+
+  const [updateFolderName] = useUpdateFolderName(id);
   return (
     <Accordion
       index={Number(!expanded)}
       maxWidth="100%"
       width={["300px", "400px", "600px", "1000px"]}
-      border="4px"
+      border="2px"
+      borderRightWidth={folder_id ? 0 : "2px"}
       borderColor="gray.200"
       borderRadius="10px"
-      backgroundColor="cornsilk"
+      borderTopRightRadius={folder_id ? 0 : "10px"}
+      borderBottomRightRadius={folder_id ? 0 : "10px"}
+      backgroundColor="yellow.50"
       ref={provided.innerRef}
       {...provided.draggableProps}
     >
-      <AccordionItem padding="1rem">
+      <AccordionItem
+        padding="1rem"
+        paddingRight={folder_id ? 0 : "1rem"}
+        border="0"
+      >
         <HStack justifyContent="space-between">
-          <Heading {...provided.dragHandleProps}>{name}</Heading>
+          <HStack>
+            <div {...provided.dragHandleProps}>
+              <DragHandleIcon />
+            </div>
+            <Editable
+              fontWeight="light"
+              fontSize="xl"
+              defaultValue={name}
+              onSubmit={updateFolderName}
+            >
+              <EditablePreview />
+              <EditableInput />
+            </Editable>
+          </HStack>
           <HStack>
             <AccordionButton width="fit-content" onClick={toggleFolder}>
               <AccordionIcon />
@@ -87,7 +113,7 @@ const FolderView = ({ id, name, provided, folder_id }) => {
             <MoveNode type="folder" folder_id={folder_id} id={id} />
           </HStack>
         </HStack>
-        <AccordionPanel>
+        <AccordionPanel padding="0">
           <VStack gap="1rem" paddingTop="1rem">
             {showQuestionCreate && (
               <CreateQuestion cancel={toggleQuestionCreateForm} folderId={id} />

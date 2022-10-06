@@ -93,6 +93,7 @@ export const QuestionForm = ({
       <Input
         fontSize="1.875rem"
         fontWeight="bolder"
+        paddingLeft="0"
         value={formValues.text}
         name="text"
         type="text"

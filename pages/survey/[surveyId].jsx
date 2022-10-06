@@ -85,7 +85,7 @@ const SurveyPage = () => {
           <Droppable droppableId={`Survey: ${title}`}>
             {(provided) => (
               <div {...provided.droppableProps} ref={provided.innerRef}>
-                <VStack gap="50px">
+                <VStack gap="1rem">
                   {row.map((item, index) => (
                     <Draggable
                       key={item.id}
