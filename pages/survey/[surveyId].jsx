@@ -53,7 +53,13 @@ const SurveyPage = () => {
         flexWrap="wrap"
       >
         <NextLink href="/" passHref>
-          <Link fontSize="2rem" fontWeight="bold">
+          <Link
+            fontSize="2rem"
+            fontWeight="bold"
+            onClick={() => {
+              setSearchText({ target: { value: "" } });
+            }}
+          >
             Home
           </Link>
         </NextLink>

@@ -69,8 +69,9 @@ const CreateFolder = ({ folderId, cancel }) => {
       onSubmit={createFolderInForm}
     >
       <Input
-        fontSize="1.875rem"
-        fontWeight="bolder"
+        fontWeight="light"
+        fontSize="xl"
+        paddingLeft="0"
         name="name"
         value={createFormValues.name}
         onChange={onCreateFormChange}

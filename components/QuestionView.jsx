@@ -115,7 +115,7 @@ const QuestionRead = ({
           <Heading size="md">Options</Heading>
           <UnorderedList label="Options" paddingLeft="2rem">
             {options.map((value) => (
-              <ListItem key={value} fontSize="2xl">
+              <ListItem key={value} fontSize="md">
                 {value}
               </ListItem>
             ))}
