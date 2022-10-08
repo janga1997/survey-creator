@@ -1,5 +1,9 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## Schema
+
+<img width="1315" alt="Survey Creator Schema (1)" src="https://user-images.githubusercontent.com/15131207/194700080-5fa46ae7-0c31-4d74-8531-79c3e4618529.png">
+
 ## Getting Started
 
 First, run the development server:
@@ -14,9 +18,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## Backend
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+The backend is a Hasura instance on Heroku hosted at https://survey-creator-api.herokuapp.com/console/data.
 
 ## Learn More
 
